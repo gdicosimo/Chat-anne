@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  #database:
+  #  image: mongo
+  #  container_name: mongo
+  #  restart: always
+  #  environment:
+  #    - ALLOW_EMPTY_PASSWORD=yes
+  #  ports:
+  #    - "27017:27017"
+  #  volumes:
+  #    - mongo-data:/data/db
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile.dev
+    container_name: flask
+    restart: always
+    environment:
+      - FLASK_ENV=development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/usr/src/app
+    #links:
+    # - database
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.dev
+    container_name: react
+    restart: always
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/usr/src/app
+
+#volumes:
+#  mongo-data:
