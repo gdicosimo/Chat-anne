@@ -1,20 +1,15 @@
-# Use the official Python image as a base
-FROM python:3.8-slim
+# Build stage
+FROM python:3.9-slim AS base
 
-# Set the working directory inside the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+COPY requirements.txt /usr/src/app/
 
-# Install Flask and other dependencies
+# Install dependencies
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
-COPY . .
-
-# Expose port 5000 to the outside world (Flask default)
 EXPOSE 5000
 
-# Run the Flask application with auto-reload and debugger enabled
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000", "--reload", "--debugger"]
+CMD ["python", "app.py"]
+

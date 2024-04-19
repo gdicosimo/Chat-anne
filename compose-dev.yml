@@ -12,20 +12,20 @@ services:
   #  volumes:
   #    - mongo-data:/data/db
 
+
+services:
   backend:
     build:
       context: backend
       dockerfile: Dockerfile.dev
     container_name: flask
     restart: always
-    environment:
-      - FLASK_ENV=development
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/usr/src/app
-    #links:
-    # - database
+    networks:
+      - development
 
   frontend:
     build:
@@ -37,6 +37,11 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/usr/src/app
+    networks:
+      - development
+
+networks:
+  development:
 
 #volumes:
 #  mongo-data:

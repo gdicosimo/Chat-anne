@@ -15,26 +15,41 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: Dockerfile
-    container_name: react
+      dockerfile: Dockerfile.prod
+    container_name: page
+    restart: always
+    # Expose frontend on port 80 for Nginx
     ports:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - production
 
   backend:
     build:
       context: backend
-      dockerfile: Dockerfile
-    container_name: flask
+      dockerfile: Dockerfile.prod
+    container_name: api
+    restart: always
+    # No need to expose ports for backend in production
+    # ports:
+    #   - "5000:5000"
+    networks:
+      - production
       
   nginx:
     image: nginx:latest
-    container_name : nginx
+    container_name: proxy
+    restart: always
     volumes:
       - ./nginx/nginx.conf:/tmp/nginx.conf
+    # Link frontend service to Nginx
     depends_on:
       - frontend
+    networks:
+      - production
 
-volumes:
-  mongo-data:
+networks:
+  production:
+

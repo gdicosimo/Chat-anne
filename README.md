@@ -4,6 +4,21 @@
 
 Este repositorio contiene una aplicación web desarrollada con [React](https://reactjs.org/) en el frontend y [Flask](https://flask.palletsprojects.com/) en el backend, desplegada utilizando [Docker Compose](https://docs.docker.com/compose/).
 
+## Estructura del proyecto
+
+project/
+├── backend/
+│   ├── app.py
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   └── package.json
+├── nginx/
+│   └── nginx.conf
+├── compose.yml
+├── compose-dev.yml
+/
+
 ## Requisitos
 
 - Docker: [Instalación de Docker](https://docs.docker.com/get-docker/)
@@ -22,6 +37,22 @@ Este repositorio contiene una aplicación web desarrollada con [React](https://r
    ```bash
    cd Chat-anne
    ```
+
+## Instalación de Dependencias del Proyecto
+
+setup.sh automatiza el proceso de instalación de las dependencias del proyecto tanto para el backend como para el frontend. Sigue estos pasos para utilizar el script:
+
+Ejecuta el script `setup.sh` proporcionado en el directorio raíz del proyecto.
+
+```bash
+./setup.sh
+```
+
+Este script realizará las siguientes tareas:
+
+- Creará un entorno virtual para el backend si no existe.
+- Instalará las dependencias del backend desde el archivo `requirements.txt`.
+- Instalará las dependencias del frontend utilizando npm en el directorio `frontend`.
 
 ## Uso
 
@@ -48,12 +79,12 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
    docker-compose down
    ```
 
-### Despliegue
+### Produccion
 
 Para desplegar la aplicación en un entorno de producción, puedes utilizar los mismos comandos de Docker Compose.
 
 
-1. Ejecuta el siguiente comando para construir y levantar los contenedores en el entorno de producción:
+1. Ejecuta el siguiente comando para construir y levantar los contenedores en el entorno de producción:q
 
    ```bash
    docker-compose -f compose.yml up --build
