@@ -70,7 +70,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 
 2. Una vez que todos los contenedores estén levantados, podrás acceder a la aplicación en tu navegador web:
 
-   - Frontend (React): [http://localhost:3000](http://localhost:4200)
+   - Frontend (React): [http://localhost:4200](http://localhost:4200)
    - Backend (Flask): [http://localhost:5000](http://localhost:5000)
 
 3. Realiza los cambios necesarios en el código fuente. Los cambios realizados en el código se reflejarán automáticamente en la aplicación sin necesidad de reiniciar los contenedores.
