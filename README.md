@@ -6,18 +6,20 @@ Este repositorio contiene una aplicación web desarrollada con [React](https://r
 
 ## Estructura del proyecto
 
+~~~
 project/
 ├── backend/
-│   ├── app.py
-│   └── requirements.txt
+│   ├── app.py #flask
+│   └── requirements.txt #Dependencias de la API
 ├── frontend/
-│   ├── src/
-│   └── package.json
+│   ├── src/ #vite + tailwindcss
+│   └── package.json #Dependencias de vite
 ├── nginx/
-│   └── nginx.conf
-├── compose.yml
-├── compose-dev.yml
+│   └── nginx.conf #Configuracion del proxy
+├── compose.yml #Configuracion de la aplicacion en produccion
+├── compose-dev.yml #Configuracion de la aplicacion en desarrollo
 /
+~~~
 
 ## Requisitos
 
@@ -68,7 +70,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 
 2. Una vez que todos los contenedores estén levantados, podrás acceder a la aplicación en tu navegador web:
 
-   - Frontend (React): [http://localhost:3000](http://localhost:3000)
+   - Frontend (React): [http://localhost:3000](http://localhost:4200)
    - Backend (Flask): [http://localhost:5000](http://localhost:5000)
 
 3. Realiza los cambios necesarios en el código fuente. Los cambios realizados en el código se reflejarán automáticamente en la aplicación sin necesidad de reiniciar los contenedores.
@@ -93,4 +95,8 @@ Para desplegar la aplicación en un entorno de producción, puedes utilizar los 
 2. Accede a la aplicación utilizando la URL correspondiente
    - Chat-anne : [http://localhost/](http://localhost/)
 
+3. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
+   ```bash
+   docker-compose down
+   ```
