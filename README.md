@@ -78,7 +78,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 4. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
    ```bash
-   docker-compose down
+   docker-compose -f compose.yml up down
    ```
 
 ### Produccion
@@ -98,5 +98,5 @@ Para desplegar la aplicación en un entorno de producción, puedes utilizar los 
 3. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
    ```bash
-   docker-compose down
+   docker-compose -f compose.yml up down
    ```

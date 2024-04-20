@@ -12,8 +12,6 @@ services:
   #  volumes:
   #    - mongo-data:/data/db
 
-
-services:
   backend:
     build:
       context: backend
