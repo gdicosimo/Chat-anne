@@ -12,6 +12,7 @@ services:
   #  volumes:
   #    - mongo-data:/data/db
 
+
   backend:
     build:
       context: backend
@@ -35,11 +36,13 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
     networks:
       - development
 
 networks:
   development:
 
-#volumes:
+volumes:
 #  mongo-data:
+  node_modules:

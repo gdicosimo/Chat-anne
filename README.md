@@ -68,6 +68,9 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
    docker-compose -f compose-dev.yml up --build
    ```
 
+   > No es necesario realizar un --build cada vez que se desea iniciar el proyecto en desarrollo. Este proceso se lleva a cabo solo una vez o cuando se modifica el archivo compose-dev.yml
+
+
 2. Una vez que todos los contenedores estén levantados, podrás acceder a la aplicación en tu navegador web:
 
    - Frontend (React): [http://localhost:4200](http://localhost:4200)
@@ -78,7 +81,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 4. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
    ```bash
-   docker-compose -f compose.yml up down
+   docker-compose -f compose-dev.yml up down
    ```
 
 ### Produccion
