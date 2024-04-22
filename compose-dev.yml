@@ -1,28 +1,47 @@
 version: "3.9"
 
 services:
-  #database:
-  #  image: mongo
-  #  container_name: mongo
-  #  restart: always
-  #  environment:
-  #    - ALLOW_EMPTY_PASSWORD=yes
-  #  ports:
-  #    - "27017:27017"
-  #  volumes:
-  #    - mongo-data:/data/db
+  database:
+    image: mongo
+    container_name: mongo
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
 
-
-  backend:
+  llm:
     build:
-      context: backend
+      context: ./backend/api_rag
       dockerfile: Dockerfile.dev
     container_name: flask
     restart: always
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/usr/src/app
+      - ./backend/api_rag:/usr/src/app
+    networks:
+      - development
+
+  crud:
+    build:
+      context: ./backend/api_crud
+      dockerfile: Dockerfile.dev
+    container_name: express
+    restart: always
+    environment:
+      - EXPRESS_SKIP_DB_WAIT=0
+      - EXPRESS_SKIP_DB_MIGRATION=0
+      - EXPRESS_SKIP_NPM_INSTALL=0
+      - EXPRESS_SKIP_BOWER_INSTALL=0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/api_crud:/usr/src/app
+    links:
+      - database
     networks:
       - development
 
@@ -44,5 +63,5 @@ networks:
   development:
 
 volumes:
-#  mongo-data:
+  mongo-data:
   node_modules:

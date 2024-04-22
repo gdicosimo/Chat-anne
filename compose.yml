@@ -1,16 +1,16 @@
 version: "3.9"
 
 services:
-  #database:
-    #image: mongo:latest
-    #container_name: mongo
-    #restart: always
-    #environment:
-    #  - ALLOW_EMPTY_PASSWORD=yes
-    #volumes:
-    #  - mongo-data:/data/db
-    #ports:
-    #  - "27017:27017"
+  database:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"  
     
   frontend:
     build:
@@ -22,23 +22,38 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - llm
+      - crud
     networks:
       - production
 
-  backend:
+  llm:
     build:
-      context: backend
+      context: ./backend/api_rag
       dockerfile: Dockerfile.prod
-    container_name: api
+    container_name: api_rag
     restart: always
     # No need to expose ports for backend in production
     # ports:
     #   - "5000:5000"
     networks:
       - production
-      
-  nginx:
+ 
+  crud:
+    build:
+      context: ./backend/api_crud
+      dockerfile: Dockerfile.prod
+    container_name: api_crud
+    restart: always
+    # No need to expose ports for backend in production
+    # ports:
+    #   - "3000:3000"
+    links:
+      - database
+    networks:
+      - production
+ 
+  proxy:
     image: nginx:latest
     container_name: proxy
     restart: always
@@ -53,3 +68,5 @@ services:
 networks:
   production:
 
+volumes:
+  mongo-data:
