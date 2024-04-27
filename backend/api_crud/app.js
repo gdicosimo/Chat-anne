@@ -12,7 +12,7 @@ app.use(cors());
 app.use('/users', usersRouter);
 
 app.get('/', (req, res) => {
-  res.status(400).send('api works!!')
+  res.status(200).send('api works!!')
 })
 
 export default app;

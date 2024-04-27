@@ -10,7 +10,9 @@ services:
     volumes:
       - mongo-data:/data/db
     ports:
-      - "27017:27017"  
+      - "27017:27017"
+    networks:
+      - production
     
   frontend:
     build:
@@ -22,12 +24,12 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - llm
+      - rag
       - crud
     networks:
       - production
 
-  llm:
+  rag:
     build:
       context: ./backend/api_rag
       dockerfile: Dockerfile.prod

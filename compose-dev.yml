@@ -11,8 +11,10 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - development
 
-  llm:
+  rag:
     build:
       context: ./backend/api_rag
       dockerfile: Dockerfile.dev

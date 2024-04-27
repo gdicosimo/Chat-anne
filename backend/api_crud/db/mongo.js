@@ -4,7 +4,6 @@ import { schema } from './schema.js';
 const dbName = 'chatanne';
 const url = `mongodb://database:27017/${dbName}?authSource=admin`;
 
-
 const connectDB = async () => { 
   return mongoose.connect(url)
   .then(() => {
