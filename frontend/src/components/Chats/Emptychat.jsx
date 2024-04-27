@@ -1,5 +1,5 @@
 import React from 'react'
-import { addDocs, check } from '../assets'
+import { addDocs, check } from '../../assets'
 
 const Emptychat = () => {
   return (
@@ -23,6 +23,9 @@ const Emptychat = () => {
                 </div>
             </div>
         </div>
+        {
+            //deberia ser un modulo a parte
+        }
         <input type="file" class="block w-full 
             file:hover:cursor-pointer
             file:font-poppins file:font-medium file:text-xl
