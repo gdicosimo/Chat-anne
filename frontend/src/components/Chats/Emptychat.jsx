@@ -39,7 +39,7 @@ const Emptychat = () => {
             file:border-color-cream
             hover:file:bg-color-middleblack
             text-color-black
-        " placeholder='Drop your PDFs here'/>
+        " placeholder='Drop your PDFs files here'/>
     </div>
   )
 }
