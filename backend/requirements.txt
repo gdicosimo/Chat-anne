@@ -1,0 +1,10 @@
+Flask
+Flask-cors
+pymongo
+
+langchain
+langchain_community
+pypdf
+chromadb
+google.generativeai
+langchain-google-genai

@@ -9,10 +9,10 @@ Chat-anne ofrece una forma intuitiva y conveniente de explorar y comprender el c
 ~~~
 project/
 ├── backend/
-│   ├── api_rag/ # API de LLM mediante LangChain
-│   └── api_crud/ # API de CRUD de usuarios mediante Express
+│   ├── src/ # Flask + LangChain + MongoDB + ChromaDB
+│   └── requirements.txt/ # Dependencias de Flask y LangChain
 ├── frontend/
-│   ├── src/ # Vite + Tailwind CSS
+│   ├── src/ # Vite + Tailwind CSS + React
 │   └── package.json # Dependencias de Vite
 ├── nginx/
 │   └── nginx.conf # Configuración del proxy
@@ -51,8 +51,7 @@ Ejecuta el script `setup.sh` proporcionado en el directorio raíz del proyecto.
 
 Este script realizará las siguientes tareas:
 
-- Instalará las dependencias de la API de LLM utilizando un entorno virtual de Python en el directorio `backend/api_rag`.
-- Instalará las dependencias de la api_crud utilizando npm en el directorio `backend/api_crud`.
+- Instalará las dependencias del backend utilizando un entorno virtual de Python en el directorio `backend`.
 - Instalará las dependencias del frontend utilizando npm en el directorio `frontend`.
 
 ## Uso
@@ -72,8 +71,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 
 2. Una vez que todos los contenedores estén levantados, podrás acceder a la aplicación en tu navegador web:
 
-   - API RAG (Flask): [http://localhost:5000](http://localhost:5000)
-   - API CRUD (Express): [http://localhost:3000](http://localhost:3000)
+   - Backend (Flask): [http://localhost:5000](http://localhost:5000)
    - Frontend (React): [http://localhost:4200](http://localhost:4200)
 
 3. Realiza los cambios necesarios en el código fuente. Los cambios realizados en el código se reflejarán automáticamente en la aplicación sin necesidad de reiniciar los contenedores.
