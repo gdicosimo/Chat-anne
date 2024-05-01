@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  database:
+  mongodb:
     image: mongo
     container_name: mongo
     restart: always
@@ -14,44 +14,37 @@ services:
     networks:
       - development
 
-  rag:
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    restart: always
+    environment:
+      - IS_PERSISTENT=TRUE
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma/
+    networks:
+      - development
+
+  flask:
     build:
-      context: ./backend/api_rag
+      context: backend
       dockerfile: Dockerfile.dev
     container_name: flask
     restart: always
     ports:
       - "5000:5000"
     volumes:
-      - ./backend/api_rag:/usr/src/app
+      - ./backend/:/usr/src/app
     networks:
       - development
 
-  crud:
-    build:
-      context: ./backend/api_crud
-      dockerfile: Dockerfile.dev
-    container_name: express
-    restart: always
-    environment:
-      - EXPRESS_SKIP_DB_WAIT=0
-      - EXPRESS_SKIP_DB_MIGRATION=0
-      - EXPRESS_SKIP_NPM_INSTALL=0
-      - EXPRESS_SKIP_BOWER_INSTALL=0
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./backend/api_crud:/usr/src/app
-    links:
-      - database
-    networks:
-      - development
-
-  frontend:
+  vite:
     build:
       context: frontend
       dockerfile: Dockerfile.dev
-    container_name: react
+    container_name: vite
     restart: always
     ports:
       - "4200:4200"
@@ -67,3 +60,5 @@ networks:
 volumes:
   mongo-data:
   node_modules:
+  chroma-data:
+    driver: local

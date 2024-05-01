@@ -18,40 +18,25 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile.prod
-    container_name: page
+    container_name: frontend
     restart: always
     # Expose frontend on port 80 for Nginx
     ports:
       - "80:80"
     depends_on:
-      - rag
-      - crud
+      - backend
     networks:
       - production
 
-  rag:
+  backend:
     build:
-      context: ./backend/api_rag
+      context: backend
       dockerfile: Dockerfile.prod
-    container_name: api_rag
+    container_name: backend
     restart: always
     # No need to expose ports for backend in production
     # ports:
     #   - "5000:5000"
-    networks:
-      - production
- 
-  crud:
-    build:
-      context: ./backend/api_crud
-      dockerfile: Dockerfile.prod
-    container_name: api_crud
-    restart: always
-    # No need to expose ports for backend in production
-    # ports:
-    #   - "3000:3000"
-    links:
-      - database
     networks:
       - production
  
