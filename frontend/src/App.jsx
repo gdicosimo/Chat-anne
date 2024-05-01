@@ -5,7 +5,7 @@ import Footer from './components/Footer'
 
 function App() {
   return (
-    <div className='bg-color-middleblack pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
+    <div className='bg-color-black pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
       <Header/>
       <Body/>
       <Footer/>

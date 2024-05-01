@@ -6,8 +6,11 @@ const Emptychat = () => {
     <div className='flex flex-col gap-4 w-full h-full justify-end'>
         <div className='flex flex-col bg-color-middleblack p-8 items-start border-[1px] border-color-cream rounded-3xl gap-4 hover:cursor-default'>
             <div className="relative">
-                <div className="w-[60px] h-[60px] left-0 bottom-0 mb-2 absolute bg-gradient-to-br from-white via-color-cream via-60% to-amber-400 rounded-full shadow-2xl shadow-color-cream" >
-                    <img src={addDocs}/>
+                <div className="w-[60px] h-[60px] left-0 bottom-0 mb-2 absolute 
+                bg-gradient-to-br from-white via-color-cream via-60% to-amber-400 
+                rounded-full shadow-2xl shadow-color-cream" 
+                >
+                    <img src={addDocs} className='h-7 w-7 mt-4 ml-4'/>
                 </div>
             </div>
             <h1>Upload your PDF files</h1>
