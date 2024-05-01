@@ -9,7 +9,7 @@ const Body = () => {
     const example = [{id:0, name:"Julian"}] //para usar de ejemplo como si fuera rta de la api
     const logged = false;
     return (
-        <div className='px-5 py-8 w-full h-full max-w-[900px] flex'>
+        <div className= 'px-5 py-10 w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack'>
             {
                 logged ? <Chat/> : <Emptychat/>
             }
