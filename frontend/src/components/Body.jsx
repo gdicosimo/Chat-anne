@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Emptychat from './Chats/Emptychat'
 import Chat from './Chats/Chat'
+
 const Body = () => {
     const [emptyChat, setEmptyChat] = useState(true)
     //cuando usuario sin registrar o chat nuevo, muestra empty chat
@@ -8,6 +9,7 @@ const Body = () => {
     //userService.chats devuelve los chats
     const example = [{id:0, name:"Julian"}] //para usar de ejemplo como si fuera rta de la api
     const logged = false;
+    
     return (
         <div className= 'px-5 py-10 w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack'>
             {

@@ -7,7 +7,7 @@ import options from './icons/options.svg'
 import send from './icons/send.svg'
 import check from './icons/check.svg'
 import trash from './icons/trash.svg'
-
+import cross from './icons/cross.svg'
 export {
     add,
     addDocs,
@@ -17,5 +17,6 @@ export {
     options,
     send,
     check,
-    trash
+    trash,
+    cross
 }

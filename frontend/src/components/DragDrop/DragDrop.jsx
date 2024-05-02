@@ -28,7 +28,7 @@ const DragDrop = () => {
                 type="file"
                 multiple={true}
                 onChange={(e)=>DragDropLogic.handleChange(e, setFiles)}
-                accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf"
+                accept=".pdf"
                 />
 
                 <p className='font-poppins font-normal text-color-cream text-lg'>
