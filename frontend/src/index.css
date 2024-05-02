@@ -23,4 +23,12 @@
     .user-msg {
         @apply flex w-full p-20 bg-color-middleblack rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[20px] justify-start items-center
     }
+
+    .panel {
+        @apply w-full pcsmall:w-1/3 pclarge:w-1/5 absolute h-lvh  bg-color-lightblack/20 right-0 z-10 backdrop-blur-lg border-l-2 border-color-lightblack
+    }
+
+    .container-panel {
+        @apply gap-2 items-center flex flex-row px-10 py-5 m-4 rounded-xl bg-color-lightblack
+    }
 }
