@@ -1,27 +1,37 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import FileContainer from './FileContainer'
 import { add } from '../../assets'
 import DragDropLogic from '../DragDrop/DragDropLogic'
-const FilesLoaded = ({files}) => {
+
+const FilesLoaded = ({files, setFiles}) => {
     const inputRef = useRef(null)
-    // onChange={(e)=>DragDropLogic.handleChange(e, setFiles)}
+
+    useEffect(()=>{
+
+    }, [files.length])
   return (
-    <div className='flex flex-row gap-2 w-full overflow-x-auto scrollbar my-2 items-center'>
-        
+    <div className='flex flex-row gap-2 w-full overflow-x-auto scrollbar hover:scrollbar-thumb-color-lightblack my-2 items-center transition-all'>
         <input
             placeholder="fileInput"
             className="hidden"
             ref={inputRef}
             type="file"
+            onChange={(e)=>DragDropLogic.handleChange(e, setFiles, ()=>{})}
             multiple={true}
             accept=".pdf"
         />
-        <img src={add} className='h-6 mr-3 btn-animated' onClick={()=>DragDropLogic.openFileExplorer(inputRef)}/>
-        {files.map((file)=>(
-            <div key={file.id}>
-                <FileContainer file={file}/>
-            </div>
-        ))}
+        {
+            files[0] != null ? (<img src={add} className='h-6 mr-3 btn-animated' onClick={()=>DragDropLogic.openFileExplorer(inputRef)}/>) : null
+        }
+        {
+            files[0] != null ? (
+                files.map((file)=>(
+                    <div key={file.id}>
+                        <FileContainer file={file}/>
+                    </div>
+                ))
+                ) : null
+        }
     </div>
   )
 }
