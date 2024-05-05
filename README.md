@@ -63,7 +63,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 1. Ejecuta el siguiente comando para construir y levantar los contenedores de Docker:
 
    ```bash
-   docker-compose -f compose-dev.yml up --build
+   docker compose -f compose-dev.yml up --build
    ```
 
    > No es necesario realizar un --build cada vez que se desea iniciar el proyecto en desarrollo. Este proceso se lleva a cabo solo una vez o cuando se modifica el archivo compose-dev.yml
@@ -79,7 +79,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 4. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
    ```bash
-   docker-compose -f compose-dev.yml up down
+   docker compose -f compose-dev.yml up down
    ```
 
 ### Produccion
@@ -90,7 +90,7 @@ Para desplegar la aplicación en un entorno de producción, puedes utilizar los 
 1. Ejecuta el siguiente comando para construir y levantar los contenedores en el entorno de producción:q
 
    ```bash
-   docker-compose -f compose.yml up --build
+   docker compose -f compose.yml up --build
    ```
 
 2. Accede a la aplicación utilizando la URL correspondiente
@@ -99,5 +99,5 @@ Para desplegar la aplicación en un entorno de producción, puedes utilizar los 
 3. Cuando hayas terminado de trabajar, puedes detener los contenedores presionando `Ctrl + C` en la terminal donde se están ejecutando, y luego ejecutar el siguiente comando para detenerlos y eliminarlos:
 
    ```bash
-   docker-compose -f compose.yml up down
+   docker compose -f compose.yml up down
    ```
