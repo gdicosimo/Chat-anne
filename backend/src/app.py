@@ -4,16 +4,22 @@ from flask_cors import CORS
 from routes.langchain import langchain
 from routes.auth import auth
 
-api = Flask(__name__)
-CORS(api)
+UPLOAD_FOLDER = '/tmp/'
 
-api.register_blueprint(langchain, url_prefix='/langchain')
-api.register_blueprint(auth, url_prefix='/auth')
+app = Flask(__name__)
+CORS(app)
 
-@api.route("/", methods=['GET'])
+app.register_blueprint(langchain, url_prefix='/langchain')
+app.register_blueprint(auth, url_prefix='/auth')
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+@app.route("/", methods=['GET'])
 def index():
     data = {"message": "Hello World!!"}
     return jsonify(data), 400
 
+
 if __name__ == '__main__':
-    api.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

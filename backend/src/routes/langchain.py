@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from werkzeug.exceptions import NotFound
 
-from controllers.langchain_controller import get_index, makeID, answer
+from controllers.langchain_controller import get_index, create_or_add_to_collection, answer
 
 langchain = Blueprint('langchain', __name__)
 
@@ -11,7 +11,7 @@ def index():
 
 @langchain.route('/upload-pdf', methods=['POST'])
 def upload_pdf():
-    return makeID(request)
+    return create_or_add_to_collection(request)
 
 @langchain.route('/query', methods=['POST'])
 def query():
