@@ -8,7 +8,6 @@ import send from './icons/send.svg'
 import check from './icons/check.svg'
 import cross from './icons/cross.svg'
 import salida from './icons/salida.svg'
-import circle from './icons/circle.svg'
 import basura from './icons/basura.svg'
 
 export {
@@ -22,6 +21,5 @@ export {
     check,
     cross,
     salida,
-    circle,
     basura
 }
