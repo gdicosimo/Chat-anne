@@ -2,7 +2,7 @@
 SCHEMA = {
     'users': {
         'username': str,
-        'psw': str,
+        'pwd': str,
     }
 }
 
