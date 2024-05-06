@@ -32,6 +32,6 @@
     }
 
     .container-panel {
-        @apply gap-2 items-center flex flex-row m-4 h-full rounded-xl bg-color-lightblack py-5 px-20 w-96
+        @apply flex flex-row gap-2 items-center bg-color-lightblack py-5 px-6 rounded-2xl mx-4 hover:opacity-80 hover:scale-[0.99] transition-all
     }
 }
