@@ -16,7 +16,7 @@ const DragDrop = ({setFiles}) => {
             px-8 py-5 rounded-3xl text-center flex flex-col w-full items-center justify-center `}
             onDragEnter={(e)=>DragDropLogic.handleDragEnter(e,setDragActive)}
             onSubmit={(e) => e.preventDefault()}
-            onDrop={(e)=>DragDropLogic.handleDrop(e, setDragActive, setFilesInBox)}
+            onDrop={(e)=>DragDropLogic.handleDrop(e, setDragActive, setFilesInBox, setFilesAdded)}
             onDragLeave={(e)=>DragDropLogic.handleDragLeave(e,setDragActive)}
             onDragOver={(e)=>DragDropLogic.handleDragOver(e,setDragActive)}
             >
