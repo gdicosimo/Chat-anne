@@ -17,7 +17,7 @@ const Body = ({files, setFiles}) => {
     },[files.length])
 
     return (
-        <div className= 'px-5 py-10 w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack'>
+        <div className= 'px-5 py-10 w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
             {
                 filesLoaded ? <Chat/> : <Emptychat files={files} setFiles={setFiles}/>
             }
