@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Emptychat from './Chats/Emptychat'
 import Chat from './Chats/Chat'
 
-const Body = ({files, setFiles}) => {
+const Body = ({files, setFiles, messages}) => {
     const [emptyChat, setEmptyChat] = useState(true)
     //cuando usuario sin registrar o chat nuevo, muestra empty chat
     //si el usuario selecciono un chat, tiene que traer el modulo de chat en progreso
@@ -19,7 +19,7 @@ const Body = ({files, setFiles}) => {
     return (
         <div className= 'px-5 py-10 w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
             {
-                filesLoaded ? <Chat/> : <Emptychat files={files} setFiles={setFiles}/>
+                filesLoaded ? <Chat messages={messages}/> : <Emptychat files={files} setFiles={setFiles}/>
             }
             
         </div>

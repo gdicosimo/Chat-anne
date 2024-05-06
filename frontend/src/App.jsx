@@ -10,11 +10,22 @@ function App() {
   useEffect(()=>{
     console.log(filesLoaded)
   }, [filesLoaded.length])
+
+
+  const [messages, setMessages] = useState(["Hi! Let's start talking"])
+  const [refresh, setRefresh] = useState(false)
+
+  const addMsg = (msg) => {
+    messages.push(msg)
+    setMessages(messages)
+    console.log(messages)
+    setRefresh(!refresh)
+  }
   return (
     <div className='bg-color-black pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
       <Header files={filesLoaded} setFiles={setFilesLoaded}/>
-      <Body files={filesLoaded} setFiles={setFilesLoaded}/>
-      <Footer/>
+      <Body files={filesLoaded} setFiles={setFilesLoaded} messages={messages} refresh={refresh}/>
+      <Footer setMessages={(msg)=>{addMsg(msg)}}/>
     </div>
   )
 }

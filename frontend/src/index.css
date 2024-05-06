@@ -18,10 +18,10 @@
 
 @layer components {
     .bot-msg {
-        @apply flex w-full p-20 bg-color-middleblack rounded-tl-[20px] rounded-tr-[20px] rounded-br-[20px] justify-start items-center
+        @apply text-white bg-color-lightblack p-6 rounded-2xl rounded-bl-none w-fit self-start font-poppins max-w-[90%]
     }
     .user-msg {
-        @apply flex w-full p-20 bg-color-middleblack rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[20px] justify-start items-center
+        @apply  text-white bg-color-middleblack p-6 rounded-2xl rounded-br-none w-fit self-end font-poppins max-w-[90%]
     }
 
     .panel {
@@ -35,4 +35,5 @@
     .btn-animated {
         @apply hover:scale-95 hover:opacity-90 transition-all hover:cursor-pointer
     }
+
 }
