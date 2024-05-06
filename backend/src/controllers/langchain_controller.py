@@ -1,25 +1,54 @@
-from flask import jsonify, request  
-from db.chromadb.chroma import insert_db, search_db, list_all_collections
-   
+import os
+from flask import jsonify, request, current_app
+
+from langChain.app import LangChain
+
+
 def get_index():
     data = {"message": "Hello desde Langchain!!"}
     return jsonify(data), 200
 
-def makeID(request):
-    # curl -X POST -H "Content-Type: application/json" -d '{"pdf": "my_pdf" }' http://localhost:5000/langchain/upload-pdf
-    uploaded_file = request.json.get('pdf')
-    if not uploaded_file:
-        return jsonify({'error': 'No se proporcionó ningún archivo PDF'}), 400
-    
-    inserting = insert_db(uploaded_file)
-    return search_db(uploaded_file), 200  
+
+def create_or_add_to_collection(request):
+    # curl -X POST -F "pdf=@/home/user/Downloads/Modulo_3.pdf" -F "collection=gonza" http://localhost:5000/langchain/upload-pdf
+
+    try:
+        if 'pdf' not in request.files:
+            return jsonify({'error': 'No se proporciono ningun archivo PDF'}), 400
+
+        pdf_file = request.files['pdf']
+        collection = request.form.get('collection')
+
+        if not pdf_file.filename.endswith('.pdf'):
+            return jsonify({'error': 'El archivo proporcionado no es un PDF valido'}), 400
+
+        # Save the uploaded PDF file to a temporary location
+        temp_pdf_path = os.path.join(
+            current_app.config['UPLOAD_FOLDER'], pdf_file.filename)
+        pdf_file.save(temp_pdf_path)
+
+        LangChain.create_or_add(temp_pdf_path, collection)
+
+        return jsonify({'message': f'El archivo {pdf_file.filename} se agrego a la coleccion exitosamente'}), 200
+    except Exception as e:
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+    finally:
+        if os.path.exists(temp_pdf_path):
+            os.remove(temp_pdf_path)
+
 
 def answer(request):
-    # curl -X POST -H "Content-Type: application/json" -d '{"query": "works?" }' http://localhost:5000/langchain/query
-    query_data = request.json
-    if not query_data:
-        return jsonify({'error': 'No se proporcionaron datos de consulta'}), 400
-    
-    
-    
-    return {'Success' : "yes"}, 200 
+    # curl -X POST -H "Content-Type: application/json" -d '{"query": "Que es una derivada?", "collection" : "gonza"}' http://localhost:5000/langchain/query
+    try:
+        data = request.json
+
+        query = data.get('query')
+        collection = data.get('collection')
+        if not query or not collection:
+            return jsonify({'error': 'Los datos de consulta son obligatorios y deben incluir "query" y "collection"'}), 400
+
+        response = LangChain.response(query, collection)
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
