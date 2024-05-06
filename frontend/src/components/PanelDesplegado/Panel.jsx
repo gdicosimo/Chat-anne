@@ -34,7 +34,7 @@ const Panel = ({setButtonOpen}) => {
                 <h1 className="text-base font-poppins font-medium">Show all chats</h1> 
               </button>
         </div>
-        <div className="flex flex-col h-min">
+        <div className="flex flex-col ">
           {logged ? <ButtonLogOut/>:<ButtonReg/>}
         </div>
       </div> 
