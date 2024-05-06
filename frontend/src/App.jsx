@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Header from './components/Header'
 import Body from './components/Body'
 import Footer from './components/Footer'
+import Panel from './components/Panel'
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Header/>
       <Body/>
       <Footer/>
+      <Panel/>
     </div>
   )
 }
