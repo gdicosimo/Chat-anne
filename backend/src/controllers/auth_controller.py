@@ -37,14 +37,18 @@ def registerUser(username, pwd):
 
 
 def login(username, pwd):
-    list = search_db(MODEL_USER, {'username': username})
-    user = list[0]
-    hashed_password_bytes = user['pwd'].encode('utf-8')
+    try:
 
-    if user and bcrypt.checkpw(pwd.encode(), hashed_password_bytes):
-        access_token = create_access_token(identity=user['username'], expires_delta=timedelta(hours=5))
-        response = make_response({"message": "login Success"})
-        response.set_cookie('JWT-TOKEN', access_token)
-        return response
-    else:
-        return jsonify({'message': 'Login Failed'}), 401
+        list = search_db(MODEL_USER, {'username': username})
+        user = list[0]
+        hashed_password_bytes = user['pwd'].encode('utf-8')
+
+        if user and bcrypt.checkpw(pwd.encode(), hashed_password_bytes):
+            access_token = create_access_token(identity=user['username'], expires_delta=timedelta(hours=5))
+            response = make_response({"message": "login Success"})
+            response.set_cookie('access_token_cookie', access_token, httponly=True, samesite='None', secure=True)
+            return response
+        else:
+            return jsonify({'message': 'Login Failed'}), 401
+    except Exception as e:
+        return jsonify({'message': 'Login Failed Excepcion'}), 401
