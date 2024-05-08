@@ -7,7 +7,7 @@ import sessionFileStorage from './Utils/StorageManager/sessionFileStorage'
 import PanelHistorial from './components/PanelHistorial'
 
 function App() {
-  const [open, setButtonOpen] = useState(false);
+  const [open, setButtonOpen] = useState(true);
   const [filesLoaded, setFilesLoaded] = useState([])
 
   useEffect(()=>{
@@ -27,7 +27,7 @@ function App() {
   return (
     <div className='bg-color-black pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
       <Header files={filesLoaded} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen}/>
-      {open ? <PanelHistorial/> : null }
+      {open ? <PanelHistorial setPanelOpen={setButtonOpen}/> : null }
       <Body files={filesLoaded} setFiles={setFilesLoaded} messages={messages} refresh={refresh}/>
       <Footer setMessages={(msg)=>{addMsg(msg)}}/>
     </div>

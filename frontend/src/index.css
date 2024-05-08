@@ -32,7 +32,7 @@
     }
 
     .container-panel {
-        @apply flex flex-row gap-2 items-center bg-color-lightblack py-5 px-6 rounded-2xl mx-4 hover:opacity-80 hover:scale-[0.99] transition-all
+        @apply flex flex-row gap-2 items-center bg-color-lightblack py-5 px-6 rounded-2xl mx-4 hover:opacity-80 hover:scale-[0.99] transition-all hover:cursor-pointer
     }
 
     .btn-animated {
@@ -41,7 +41,6 @@
 
 
     .historial {
-        max-height: 87vh; /* Establece la altura máxima del contenedor */
         overflow-y: auto; /* Habilita el desplazamiento vertical */
     }
 
@@ -63,33 +62,5 @@
     .historial::-webkit-scrollbar-track {
         background-color: #1b1b1b;
         border-radius: 4px;
-    }
-    
-    .Ventana {
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background: rgba(0,0,0,.9);
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .Cartel {
-        width: 500px;
-        min-height: 100px;
-        background: #272323;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 5px;
-        box-shadow: rgba(61, 61, 65, 0.2) 0px 7px 29px 0px;
-        padding: 20px;
-        z-index: 9999;
-    }
-        
+    }   
 }

@@ -12,7 +12,7 @@ const historial  = [
     { id: 8, nombre: "Derivadas" },
   ];
 
-function PanelHistorial({panelOpen}) {
+function PanelHistorial({setPanelOpen}) {
   const [ventanaAbierta, setVentanaAbierta] = useState(false);
 
   const abrirVentana = () => {
@@ -22,48 +22,49 @@ function PanelHistorial({panelOpen}) {
   const cerrarVentana = () => {
     setVentanaAbierta(false);
   };
-  //const [panelOpen, setPanelOpen] = useState(true);
-
-  // const togglePanel = () => {
-  //   setPanelOpen(!panelOpen);
-  // }
-    if (panelOpen){
-        return (
-            <>
-            <div className='panel'>
-                <div >
-                <button onClick={togglePanel}><img src={cross} className='gap-2 items-center flex flex-row px-3 py-3 m-4 rounded-xl bg-color-lightblack '/></button>
-                <div className ='historial'>
-                    <ul>
-                    {historial.map(item => (
-                       <div className='container-panel' style={{ display: 'flex', alignItems: 'center' }}>
-                       <img src={chat} alt="Chat" />
-                       <h1 key={item.id}>{item.nombre}</h1>
-                       <div style={{ marginLeft: 'auto' }}>
-                           <button onClick={abrirVentana}>
-                               <img src={trash} alt="Añadir"/>
-                           </button>
-                       </div>
-                   </div>))}
-                    </ul>
-                </div>
-            </div>   
+  return (
+      <>
+        <div className='panel'>
+          <div >
+            <button onClick={()=>{setPanelOpen(false)}}><img src={cross} className='gap-2 items-center flex flex-row px-3 py-3 m-4 rounded-xl bg-color-lightblack '/></button>
+              <div className ='historial '>
+                <ul>
+                    {
+                    historial.map(item => (
+                      <div key={item.id} className='container-panel justify-between my-2'>
+                        <div className='flex flex-row gap-2'>
+                          <img src={chat} alt="Chat" />
+                          <h1 className='font-poppins font-medium text-base whitespace-nowrap overflow-hidden overflow-ellipsis'>{item.nombre}</h1>
+                        </div>
+                        <img src={trash} className='btn-animated h-5' alt="Delete" onClick={abrirVentana}/>
+                      </div>))
+                    }
+                </ul>
+              </div>
+          </div>   
         </div>
         {ventanaAbierta && (
-        <div className="ventana">
-          <div className='Cartel'>
-          <button onClick={cerrarVentana}><img src={cross} className='top-0 gap-2 items-center flex flex-row px-3 py-3 m-4 rounded-xl bg-color-lightblack '/></button>
-                    <h1>Seguro que desea eliminar el chat?</h1>
-          <div className="botones"style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <button style={{ padding: '10px', backgroundColor: 'white', color: 'black', borderRadius: '5px', border: 'none', cursor: 'pointer', margin: '5px'}} onClick={cerrarVentana}>Aceptar</button>
-            <button style={{ padding: '10px', backgroundColor: 'grey', color: 'white', borderRadius: '5px', border: 'none', cursor: 'pointer', margin: '5px'}} onClick={cerrarVentana}>Cancelar</button>
+        <div className='absolute w-full h-full flex flex-row bg-color-black/20 backdrop-blur-xl z-20 justify-center'>
+          <div className='mx-4 h-min self-center bg-color-black/70 backdrop-blur-2xl p-8 rounded-3xl border-[1px] drop-shadow-2xl'>
+              <img src={cross} onClick={cerrarVentana} className='items-center px-3 py-3 rounded-xl bg-color-lightblack btn-animated'/>
+              <h1 className='w-full text-center mt-10 '>¿Seguro desea eliminar el chat?</h1>
+              <h2 className='w-full text-center mb-10'>Esta acción no podrá deshacerse</h2>
+              <div className="flex flex-row items-center justify-between gap-2">
+                <button 
+                  className='bg-color-cream h-min py-4 px-6 rounded-xl btn-animated font-poppins flex-1' onClick={cerrarVentana}>
+                    Aceptar
+                </button>
+                <button 
+                  className='bg-color-lightblack/20 border-2 h-min py-4 px-6 rounded-xl btn-animated font-poppins text-color-cream flex-1' onClick={cerrarVentana}>
+                  Cancelar
+                </button>
+              </div>
           </div>
         </div>
-        </div>
+
       )}
-        </>
-        )}
-    else return null;
+    </>
+  )
 }
 
 export default PanelHistorial
