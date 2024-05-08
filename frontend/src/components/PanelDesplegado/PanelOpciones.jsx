@@ -3,7 +3,7 @@ import { add, chat, cross } from "../../assets";
 import ButtonReg from "./ButtonReg"
 import ButtonLogOut from "./ButtonLogOut"
 
-const Panel = ({setButtonOpen}) => {
+const PanelOpciones = ({setButtonOpen}) => {
   const [newchats, setButtonChat] = useState(false);
   const [historial, setButtonHistorial] = useState(false);
   
@@ -24,7 +24,7 @@ const Panel = ({setButtonOpen}) => {
     return (
       <div className='panel flex flex-col justify-between pclarge:h-lvh h-dvh '>  
         <div className="flex flex-col w-full gap-3">
-              <button onClick={closePanel}><img src={cross} className='gap-2 items-center flex flex-row px-3 py-3 m-4 rounded-xl bg-color-lightblack '/></button> 
+              <button onClick={closePanel}><img src={cross} className='btn-animated items-center px-3 py-3 m-4 rounded-xl bg-color-lightblack '/></button> 
               <button onClick={newChat} className='container-panel'>
                 <img src={add} /> 
                 <h1 className="text-base font-poppins font-medium">New chat</h1>
@@ -41,4 +41,4 @@ const Panel = ({setButtonOpen}) => {
         
     );
   };
-export default Panel
+export default PanelOpciones

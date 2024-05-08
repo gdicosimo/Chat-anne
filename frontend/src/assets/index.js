@@ -6,6 +6,7 @@ import logout from './icons/logout.svg'
 import options from './icons/options.svg'
 import send from './icons/send.svg'
 import check from './icons/check.svg'
+import salida from './icons/salida.svg'
 import trash from './icons/trash.svg'
 import cross from './icons/cross.svg'
 export {
@@ -18,5 +19,6 @@ export {
     send,
     check,
     trash,
-    cross
+    cross,
+    salida
 }

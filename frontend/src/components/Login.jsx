@@ -24,7 +24,7 @@ const Login = (props) => {
                 />
             </div>
             <div className='mt-8 flex flex-col gap-y-4'>
-                <button className='btn-animated py-4 bg-color-cream rounded-xl text-black font-bold text-lg'>
+                <button className='active:scale-[.98] active:duration-75 transition-all hover:scale-[0.99] hover:opacity-95 ease-in-out transform py-4 bg-color-cream rounded-xl text-black font-bold text-lg'>
                     {
                         props.login ? "Log in" : "Sign up"
                     }
