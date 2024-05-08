@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { options } from '../assets'
 import Chatname from './Chatname/Chatname'
+import Panel from './PanelDesplegado/PanelOpciones'
+
 import FilesLoaded from './Chats/FilesLoaded'
 
-const Header = ({files, setFiles}) => {
+const Header = ({setButtonOpen, files, setFiles}) => {
+  
+
+  function openPanel ()  {
+    setButtonOpen(true)
+  }
 
   useEffect(()=>{
     console.log(files)
@@ -15,7 +22,9 @@ const Header = ({files, setFiles}) => {
             <h1 className='hover:cursor-pointer'>Chat-anne</h1>
             <Chatname/>
           </div>
-          <img src={options} className='btn-animated'/>
+          <div className='h-full'>
+          <button onClick={openPanel}><img src={options} className='btn-animated'/></button>
+       </div>
       </div>
       <FilesLoaded files={files} setFiles={setFiles}/>
     </div>
