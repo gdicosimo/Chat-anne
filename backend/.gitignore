@@ -3,13 +3,8 @@
 /tmp
 /out-tsc
 /bazel-out
-__pycache__
+/__pycache__
 /venv
-
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
 
 # IDEs and editors
 .idea/
