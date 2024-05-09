@@ -2,6 +2,26 @@
 
 ROOT_DIR=$(pwd)
 
+get_api_key() {
+    read -p "Inserta tu API Key: " api_key
+
+    if [[ -z "$api_key" ]]; then
+        echo "No has ingresado ninguna API Key!"
+        echo "No podrás ejecutar el backend sin una API Key válida."
+    else
+
+        if [[ "$api_key" =~ [[:space:]] ]]; then
+            echo "La API Key no puede contener espacios en blanco!"
+            echo "No podrás ejecutar el backend sin una API Key válida."
+        else
+
+            echo "GOOGLE_API_KEY=$api_key" > "${ROOT_DIR}/backend/src/langChain/model/".env
+            echo "Se ha creado el archivo .env con la API Key."
+        fi
+    fi
+}
+
+
 # Function to install Python dependencies
 install_pip_dependencies() {
     local project_directory=$1
@@ -72,6 +92,7 @@ else
     exit 1
 fi
 
-# Wait for user input to exit
+get_api_key
+
 read -rp "Press Enter to exit..." input
 
