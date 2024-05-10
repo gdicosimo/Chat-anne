@@ -27,7 +27,7 @@ function App() {
   return (
     <div className='bg-color-black pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
       <Header files={filesLoaded} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen}/>
-      {open ? <PanelHistorial setPanelOpen={setButtonOpen}/> : null }
+      {open ? <PanelOpciones setButtonOpen={setButtonOpen}/> : null }
       <Body files={filesLoaded} setFiles={setFilesLoaded} messages={messages} refresh={refresh}/>
       <Footer setMessages={(msg)=>{addMsg(msg)}}/>
     </div>
