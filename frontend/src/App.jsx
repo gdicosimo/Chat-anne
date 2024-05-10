@@ -7,7 +7,7 @@ import sessionFileStorage from './Utils/StorageManager/sessionFileStorage'
 import PanelHistorial from './components/PanelHistorial'
 
 function App() {
-  const [open, setButtonOpen] = useState(true);
+  const [open, setButtonOpen] = useState(false);
   const [filesLoaded, setFilesLoaded] = useState([])
 
   useEffect(()=>{
