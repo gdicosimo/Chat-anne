@@ -18,7 +18,7 @@ def connect_db():
 def get_or_create_collection(collection_name):
     try:
         client = connect_db()
-        google_ef = GoogleGenerativeAI().get_chroma_embedding_function()
+        google_ef = GoogleGenerativeAI.get_chroma_embedding_function()
         collection = client.get_or_create_collection(
             name=collection_name, embedding_function=google_ef)
         return collection

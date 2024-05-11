@@ -1,4 +1,4 @@
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from db.chromadb.chromadb import connect_db, add_to_collection, list_all_collections
 
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -10,11 +10,10 @@ from langChain.prompts.prompt import prompt
 
 
 class LangChain:
-    __google_ai = GoogleGenerativeAI()
 
     @staticmethod
     def get_chroma_client(collection_name: str) -> Chroma:
-        embedding_function = LangChain.__google_ai.get_embedding_function()
+        embedding_function = GoogleGenerativeAI.get_embedding_function()
         return Chroma(
             client=connect_db(),
             collection_name=collection_name,
@@ -44,7 +43,7 @@ class LangChain:
             vectorstore = LangChain.get_chroma_client(collection_name)
             retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
 
-            llm = LangChain.__google_ai.get_llm()
+            llm = GoogleGenerativeAI.get_llm()
 
             combine_docs_chain = create_stuff_documents_chain(llm, prompt)
             retrieval_chain = create_retrieval_chain(
