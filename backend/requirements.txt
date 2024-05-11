@@ -1,0 +1,12 @@
+Flask
+Flask-cors
+pymongo
+flask-bcrypt
+Flask-JWT-Extended
+
+langchain
+langchain_community
+pypdf
+chromadb
+google.generativeai
+langchain-google-genai
