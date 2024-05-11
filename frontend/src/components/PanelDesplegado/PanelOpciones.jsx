@@ -12,6 +12,7 @@ const PanelOpciones = ({setButtonOpen}) => {
       setButtonOpen(false)
     }
     const newChat = () => {
+      window.location.reload()
       setButtonChat(false)
     }
     const openhistorial = () => {

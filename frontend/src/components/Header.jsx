@@ -4,6 +4,7 @@ import Chatname from './Chatname/Chatname'
 import Panel from './PanelDesplegado/PanelOpciones'
 
 import FilesLoaded from './Chats/FilesLoaded'
+import { Link } from 'react-router-dom'
 
 const Header = ({setButtonOpen, files, setFiles}) => {
   
@@ -19,7 +20,7 @@ const Header = ({setButtonOpen, files, setFiles}) => {
     <div className='flex flex-col w-full pclarge:px-[20px] px-[16px] '>
       <div className='py-[20px] flex flex-row justify-between w-full border-b-2 border-color-lightblack items-center'>
           <div className='flex flex-row items-center gap-3 '>
-            <h1 className='hover:cursor-pointer'>Chat-anne</h1>
+            <h1 onClick={()=>{window.location.reload()}} className='hover:cursor-pointer'>Chat-anne</h1>
             <Chatname/>
           </div>
           <div className='h-full'>
