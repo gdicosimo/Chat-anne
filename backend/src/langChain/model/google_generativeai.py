@@ -9,28 +9,64 @@ import chromadb.utils.embedding_functions as embedding_functions
 
 
 class GoogleGenerativeAI:
-    def __init__(self, embedding_model: str = "models/embedding-001", model: str = "gemini-pro"):
-        self.embedding_model = embedding_model
-        self.model = model
+    __api_key = None
+    __embedding_model = "models/embedding-001"
+    __model = "gemini-pro"
+    __chat_google = None
+    __embedding_google = None
+    __embedding_functions = None
 
+    @staticmethod
+    def __initialize():
         try:
             load_dotenv()
-            os.environ['GOOGLE_API_KEY'] = os.getenv('GOOGLE_API_KEY')
-            self.__api_key = os.getenv('GOOGLE_API_KEY')
+            GoogleGenerativeAI.__api_key = os.getenv('GOOGLE_API_KEY')
         except FileNotFoundError as e:
-            raise e
+            raise Exception("No se proporcionó la API key")
 
-    def get_model(self) -> str:
-        return self.model
+    @staticmethod
+    def __initialize_llm():
+        if GoogleGenerativeAI.__api_key is None:
+            GoogleGenerativeAI.__initialize()
+        GoogleGenerativeAI.__chat_google = ChatGoogleGenerativeAI(
+            model=GoogleGenerativeAI.__model, temperature=0.2)
 
-    def get_embedding_model(self) -> str:
-        return self.embedding_model
+    @staticmethod
+    def __initialize_embedding():
+        if GoogleGenerativeAI.__api_key is None:
+            GoogleGenerativeAI.__initialize()
+        GoogleGenerativeAI.__embedding_google = GoogleGenerativeAIEmbeddings(
+            model=GoogleGenerativeAI.__embedding_model)
 
-    def get_llm(self) -> ChatGoogleGenerativeAI:
-        return ChatGoogleGenerativeAI(model=self.model, temperature=0.2)
+    @staticmethod
+    def __initialize_chroma_embedding():
+        if GoogleGenerativeAI.__api_key is None:
+            GoogleGenerativeAI.__initialize()
+        GoogleGenerativeAI.__embedding_functions = embedding_functions(
+            api_key=GoogleGenerativeAI.__api_key)
 
-    def get_embedding_function(self) -> GoogleGenerativeAIEmbeddings:
-        return GoogleGenerativeAIEmbeddings(model=self.embedding_model)
+    @staticmethod
+    def get_model() -> str:
+        return GoogleGenerativeAI.__model
 
-    def get_chroma_embedding_function(self) -> GoogleGenerativeAIEmbeddings:
-        return embedding_functions.GoogleGenerativeAiEmbeddingFunction(api_key=self.__api_key)
+    @staticmethod
+    def get_embedding_model() -> str:
+        return GoogleGenerativeAI.__embedding_model
+
+    @staticmethod
+    def get_llm() -> ChatGoogleGenerativeAI:
+        if GoogleGenerativeAI.__chat_google is None:
+            GoogleGenerativeAI.__initialize_llm()
+        return GoogleGenerativeAI.__chat_google
+
+    @staticmethod
+    def get_embedding_function() -> GoogleGenerativeAIEmbeddings:
+        if GoogleGenerativeAI.__embedding_google is None:
+            GoogleGenerativeAI.__initialize_embedding()
+        return GoogleGenerativeAI.__embedding_google
+
+    @staticmethod
+    def get_chroma_embedding_function() -> embedding_functions:
+        if GoogleGenerativeAI.__embedding_functions is None:
+            GoogleGenerativeAI.__initialize_chroma_embedding()
+        return GoogleGenerativeAI.__embedding_functions
