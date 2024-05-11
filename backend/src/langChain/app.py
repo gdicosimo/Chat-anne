@@ -1,12 +1,17 @@
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores.chroma import Chroma
 from db.chromadb.chromadb import connect_db, add_to_collection, list_all_collections
 
+
+from langchain.chains import create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 
 from langChain.model.google_generativeai import GoogleGenerativeAI
 from langChain.data_processing.processing import processing
-from langChain.prompts.prompt import prompt
+
+from langChain.prompts.prompt import qa_prompt, contextualize_q_prompt
+from langChain.memory.memory import ChatHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
 
 class LangChain:
@@ -36,22 +41,47 @@ class LangChain:
         except Exception as e:
             raise e
 
+    # This function is only for testing
+    @staticmethod
+    def list_collections():
+        try:
+            client = connect_db()
+            return [collection.name for collection in client.list_collections()]
+        except Exception as e:
+            raise e
+
     @staticmethod
     def response(query: str, collection_name: str) -> str:
         try:
-
             vectorstore = LangChain.get_chroma_client(collection_name)
-            retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
             llm = GoogleGenerativeAI.get_llm()
 
-            combine_docs_chain = create_stuff_documents_chain(llm, prompt)
-            retrieval_chain = create_retrieval_chain(
-                retriever, combine_docs_chain)
+            history_aware_retriever = create_history_aware_retriever(
+                llm, retriever, contextualize_q_prompt
+            )
+
+            combine_docs_chain = create_stuff_documents_chain(
+                llm, qa_prompt)
+
+            rag_chain = create_retrieval_chain(
+                history_aware_retriever, combine_docs_chain)
 
             query = {"input": query}
 
-            response = retrieval_chain.invoke(query)
+            conversational_rag_chain = RunnableWithMessageHistory(
+                rag_chain,
+                ChatHistory.get_session_history,
+                input_messages_key="input",
+                history_messages_key="chat_history",
+                output_messages_key="answer",
+            )
+
+            response = conversational_rag_chain.invoke(query, config={  # Invalid argument provided to Gemini: 400 Developer instruction is not enabled for models/gemini-pro
+                "configurable": {"session_id": collection_name}
+            })
 
             return response["answer"]
         except Exception as e:

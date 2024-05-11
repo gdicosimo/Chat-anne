@@ -5,7 +5,7 @@ from langChain.app import LangChain
 
 
 def get_index():
-    data = {"message": "Hello desde Langchain!!"}
+    data = {"message": "Hello from Langchain!!"}
     return jsonify(data), 200
 
 
@@ -22,7 +22,6 @@ def create_or_add_to_collection(request):
         if not pdf_file.filename.endswith('.pdf'):
             return jsonify({'error': 'El archivo proporcionado no es un PDF valido'}), 400
 
-        # Save the uploaded PDF file to a temporary location
         temp_pdf_path = os.path.join(
             current_app.config['UPLOAD_FOLDER'], pdf_file.filename)
         pdf_file.save(temp_pdf_path)
@@ -35,6 +34,12 @@ def create_or_add_to_collection(request):
     finally:
         if os.path.exists(temp_pdf_path):
             os.remove(temp_pdf_path)
+
+
+def list_collections(request):
+    # This controller is only for testing
+    collections = LangChain.list_collections()
+    return jsonify(collections), 200
 
 
 def answer(request):

@@ -21,6 +21,7 @@ class GoogleGenerativeAI:
         try:
             load_dotenv()
             GoogleGenerativeAI.__api_key = os.getenv('GOOGLE_API_KEY')
+            os.environ['GOOGLE_API_KEY'] = GoogleGenerativeAI.__api_key
         except FileNotFoundError as e:
             raise Exception("No se proporcionó la API key")
 
@@ -42,7 +43,7 @@ class GoogleGenerativeAI:
     def __initialize_chroma_embedding():
         if GoogleGenerativeAI.__api_key is None:
             GoogleGenerativeAI.__initialize()
-        GoogleGenerativeAI.__embedding_functions = embedding_functions(
+        GoogleGenerativeAI.__embedding_functions = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
             api_key=GoogleGenerativeAI.__api_key)
 
     @staticmethod

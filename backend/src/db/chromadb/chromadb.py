@@ -1,4 +1,5 @@
 import chromadb
+from chromadb.config import Settings
 import uuid
 
 from langChain.model.google_generativeai import GoogleGenerativeAI
@@ -9,7 +10,8 @@ DB_HOST = 'chromadb'
 
 def connect_db():
     try:
-        client = chromadb.HttpClient(host=DB_HOST, port=8000)
+        client = chromadb.HttpClient(
+            host=DB_HOST, port=8000, settings=Settings(allow_reset=True))
         return client
     except Exception as e:
         raise e
@@ -22,6 +24,14 @@ def get_or_create_collection(collection_name):
         collection = client.get_or_create_collection(
             name=collection_name, embedding_function=google_ef)
         return collection
+    except Exception as e:
+        raise e
+
+
+def list_collections():
+    try:
+        client = connect_db()
+        return client.list_collections()
     except Exception as e:
         raise e
 
