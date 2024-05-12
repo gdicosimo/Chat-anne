@@ -1,8 +1,8 @@
-FROM node:lts-buster AS development
+FROM node:latest as dev
 
 WORKDIR /usr/src/app
 
-COPY package.json /usr/src/app/
+COPY package.json /usr/src/app
 
 RUN npm install
 

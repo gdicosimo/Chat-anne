@@ -49,7 +49,9 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
     networks:
       - development
 
@@ -58,6 +60,4 @@ networks:
 
 volumes:
   mongo-data:
-  node_modules:
   chroma-data:
-    driver: local
