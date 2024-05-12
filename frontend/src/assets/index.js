@@ -9,6 +9,8 @@ import check from './icons/check.svg'
 import salida from './icons/salida.svg'
 import trash from './icons/trash.svg'
 import cross from './icons/cross.svg'
+
+import vid from './vids/vid.mp4'
 export {
     add,
     addDocs,
@@ -20,5 +22,6 @@ export {
     check,
     trash,
     cross,
-    salida
+    salida,
+    vid
 }

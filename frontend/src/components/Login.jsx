@@ -1,9 +1,7 @@
 import React from 'react'
 import { Link, redirect } from 'react-router-dom'
 import { useState } from 'react';
-
-import axios from 'axios';
-
+import { Helmet } from 'react-helmet';
 const Login = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -81,7 +79,9 @@ const Login = (props) => {
     }
   return (
     <div className='bg-color-black pclarge:h-lvh h-dvh flex flex-col items-center justify-between'>
-
+        <Helmet>
+            <title>Chat-anne</title>
+        </Helmet>
         <div className='flex flex-col gap-4 h-full w-2/3 max-w-[700px] justify-center'>
             <h1 className='text-4xl'>
                 {
