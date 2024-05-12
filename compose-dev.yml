@@ -49,6 +49,9 @@ services:
       - "4200:4200"
     volumes:
       - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
     networks:
       - development
 
