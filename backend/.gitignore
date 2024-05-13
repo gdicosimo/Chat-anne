@@ -3,8 +3,8 @@
 /tmp
 /out-tsc
 /bazel-out
-/__pycache__
-/venv
+__pycache__
+venv
 
 # IDEs and editors
 .idea/

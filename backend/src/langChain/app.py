@@ -41,7 +41,12 @@ class LangChain:
         try:
 
             vectorstore = LangChain.get_chroma_client(collection_name)
-            retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+
+            # Mejorar esta funcionalidad
+            if vectorstore._collection.count() == 0:
+                return "No hay elementos en la coleccion"
+
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
             llm = GoogleGenerativeAI.get_llm()
 
