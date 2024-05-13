@@ -3,7 +3,7 @@ import { add, chat, cross } from "../../assets";
 import ButtonReg from "./ButtonReg"
 import ButtonLogOut from "./ButtonLogOut"
 
-const PanelOpciones = ({setButtonOpen}) => {
+const PanelOpciones = ({setButtonOpen, setOpenHistorial}) => {
   const [newchats, setButtonChat] = useState(false);
   const [historial, setButtonHistorial] = useState(false);
   
@@ -16,7 +16,8 @@ const PanelOpciones = ({setButtonOpen}) => {
       setButtonChat(false)
     }
     const openhistorial = () => {
-      setButtonHistorial(false)
+      closePanel()
+      setOpenHistorial(true)
     }
     if(!close)
     {
