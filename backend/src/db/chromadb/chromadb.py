@@ -1,16 +1,23 @@
 import chromadb
+from chromadb.config import Settings
 import uuid
 
 from langChain.model.google_generativeai import GoogleGenerativeAI
 
 # Constants
 DB_HOST = 'chromadb'
+PORT = 8000
+CLIENT = None
 
 
 def connect_db():
     try:
-        client = chromadb.HttpClient(host=DB_HOST, port=8000)
-        return client
+        global CLIENT
+        if CLIENT is None:
+            CLIENT = chromadb.HttpClient(
+                host=DB_HOST, port=PORT, settings=Settings(allow_reset=True))
+        CLIENT.heartbeat()
+        return CLIENT
     except Exception as e:
         raise e
 
