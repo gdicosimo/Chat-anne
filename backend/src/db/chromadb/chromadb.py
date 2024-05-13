@@ -16,7 +16,7 @@ def connect_db():
         if CLIENT is None:
             CLIENT = chromadb.HttpClient(
                 host=DB_HOST, port=PORT, settings=Settings(allow_reset=True))
-            CLIENT.heartbeat()
+        CLIENT.heartbeat()
         return CLIENT
     except Exception as e:
         raise e
