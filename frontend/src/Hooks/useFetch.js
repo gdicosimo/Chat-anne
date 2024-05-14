@@ -1,1 +1,0 @@
-//modulo generico que trae los datos de la api dado un endpoint 
