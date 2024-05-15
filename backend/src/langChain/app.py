@@ -1,8 +1,12 @@
-from langchain_community.vectorstores import Chroma
-from db.chromadb.chromadb import connect_db, add_to_collection, list_all_collections
+import uuid
 
+from langchain_community.vectorstores import Chroma
+from db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
+
+from langchain_core.documents.base import Document
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
+
 
 from langChain.model.google_generativeai import GoogleGenerativeAI
 from langChain.data_processing.processing import processing
@@ -12,7 +16,11 @@ from langChain.prompts.prompt import prompt
 class LangChain:
 
     @staticmethod
-    def get_chroma_client(collection_name: str) -> Chroma:
+    def __get_chat_name(chat: str):
+        return chat.split("._", 1)[-1]
+
+    @staticmethod
+    def __get_chroma_client(collection_name: str) -> Chroma:
         embedding_function = GoogleGenerativeAI.get_embedding_function()
         return Chroma(
             client=connect_db(),
@@ -21,30 +29,112 @@ class LangChain:
         )
 
     @staticmethod
-    def create_or_add(pdf_file: object, collection_name: str):
+    def create_chat(chat: str):
         try:
-            docs = processing(pdf_file)
-            add_to_collection(collection_name, docs)
+            create(chat)
         except Exception as e:
             raise e
 
     @staticmethod
-    def delete_if_exists(collection_name: str):
+    def rename_chat_if_exists(chat: str, chat_renamed: str):
         try:
-            client = connect_db()
-            client.delete_collection(collection_name)
+            if chat == chat_renamed:
+                return
+
+            chat_renamed_name = LangChain.__get_chat_name(chat_renamed)
+            chat_name = LangChain.__get_chat_name(chat)
+
+            if not exists(chat):
+                raise ValueError(
+                    f"No existe un chat con el nombre '{chat_name}'."
+                )
+
+            if exists(chat_renamed):
+                raise ValueError(
+                    f"Ya existe un chat con el nombre '{chat_renamed_name}'."
+                )
+
+            rename(chat, chat_renamed)
         except Exception as e:
             raise e
 
     @staticmethod
-    def response(query: str, collection_name: str) -> str:
+    def delete_chat_if_exists(chat: str):
         try:
+            chat_name = LangChain.__get_chat_name(chat)
 
-            vectorstore = LangChain.get_chroma_client(collection_name)
+            if not exists(chat):
+                raise ValueError(
+                    f"No existe un chat con el nombre '{chat_name}'."
+                )
 
-            # Mejorar esta funcionalidad
-            if vectorstore._collection.count() == 0:
-                return "No hay elementos en la coleccion"
+            delete(chat)
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def append_pdf_if_exists(chat: str, pdf: object, pdf_name: str):
+        try:
+            chat_name = LangChain.__get_chat_name(chat)
+
+            if not exists(chat):
+                raise ValueError(f"No existe el chat '{chat_name}'.")
+
+            chat_client = LangChain.__get_chroma_client(chat)
+
+            docs = processing(pdf)
+
+            if exists_pdf_in(chat, pdf_name):
+                raise ValueError(
+                    f"Ya se agrego '{pdf_name}' al chat '{chat_name}'."
+                )
+
+            new_docs = []
+            ids_docs = []
+            for doc in docs:
+                new_doc = Document(
+                    page_content=doc.page_content,
+                    metadata={
+                        'page': doc.metadata.get('page'),
+                        'pdf': pdf_name
+                    }
+                )
+                new_docs.append(new_doc)
+                ids_docs.append(str(uuid.uuid1()))
+
+            chat_client.add_documents(
+                new_docs,
+                ids=ids_docs
+            )
+
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def pop_pdf_if_exists(chat: str, pdf: str):
+        try:
+            chat_name = LangChain.__get_chat_name(chat)
+
+            if not exists(chat):
+                raise ValueError(f"No existe el chat '{chat_name}'.")
+
+            pop_pdf_in(chat, pdf)
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def response(query: str, chat: str) -> str:
+        try:
+            chat_name = LangChain.__get_chat_name(chat)
+
+            if not exists(chat):
+                raise ValueError(f"No existe el chat '{chat_name}'.")
+
+            if is_empty(chat):
+                raise ValueError(
+                    f"El chat '{chat_name}' no contiene pdfs.")
+
+            vectorstore = LangChain.__get_chroma_client(chat)
 
             retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
@@ -59,5 +149,13 @@ class LangChain:
             response = retrieval_chain.invoke(query)
 
             return response["answer"]
+        except Exception as e:
+            raise e
+
+    # This function is only for testing
+    @staticmethod
+    def list_chats():
+        try:
+            return list()
         except Exception as e:
             raise e
