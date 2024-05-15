@@ -1,196 +1,164 @@
-import os
-import re
-from functools import wraps
+import uuid
 
-from flask import jsonify, request, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from langchain_community.vectorstores import Chroma
+from db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
 
-from langChain.app import LangChain
-
-REMOVE_INVALID_CHARACTERS = re.compile(r'[^a-zA-Z0-9\-_\.]')
-REMOVE_START_END_NON_ALPHANUM = re.compile(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$')
-REMOVE_CONSECUTIVE_PERIODS = re.compile(r'\.{2,}')
+from langchain_core.documents.base import Document
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
 
 
-def __save_pdf_to_temp(pdf_file):
-    if not pdf_file.filename.endswith('.pdf'):
-        raise ValueError('El archivo proporcionado no es un PDF valido')
-    temp_pdf_path = os.path.join(
-        current_app.config['UPLOAD_FOLDER'], pdf_file.filename)
-    pdf_file.save(temp_pdf_path)
-    return temp_pdf_path
+from rag.model.google_generativeai import GoogleGenerativeAI
+from rag.data_processing.processing import processing
+from rag.prompts.prompt import prompt
 
 
-def __delete_temp_file(file_path):
-    if os.path.exists(file_path):
-        os.remove(file_path)
+class Langchain:
 
+    @staticmethod
+    def __get_chat_name(chat: str):
+        return chat.split("._", 1)[-1]
 
-def __replace_underscore_and_convert_to_lowercase(chat_name):
-    return chat_name.replace(' ', '_').lower()
+    @staticmethod
+    def __get_chroma_client(collection_name: str) -> Chroma:
+        embedding_function = GoogleGenerativeAI.get_embedding_function()
+        return Chroma(
+            client=connect_db(),
+            collection_name=collection_name,
+            embedding_function=embedding_function
+        )
 
+    @staticmethod
+    def create_chat(chat: str):
+        try:
+            create(chat)
+        except Exception as e:
+            raise e
 
-def __transform_chat_name(chat_name, user_length):
-    final_length = len(chat_name) + user_length
+    @staticmethod
+    def rename_chat_if_exists(chat: str, chat_renamed: str):
+        try:
+            if chat == chat_renamed:
+                return
 
-    chat_name = __replace_underscore_and_convert_to_lowercase(chat_name)
+            chat_renamed_name = Langchain.__get_chat_name(chat_renamed)
+            chat_name = Langchain.__get_chat_name(chat)
 
-    if final_length > 63:
-        chat_name = chat_name[:63 - user_length]
+            if not exists(chat):
+                raise ValueError(
+                    f"No existe un chat con el nombre '{chat_name}'."
+                )
 
-    chat_name = REMOVE_INVALID_CHARACTERS.sub('', chat_name)
+            if exists(chat_renamed):
+                raise ValueError(
+                    f"Ya existe un chat con el nombre '{chat_renamed_name}'."
+                )
 
-    chat_name = REMOVE_START_END_NON_ALPHANUM.sub('', chat_name)
+            rename(chat, chat_renamed)
+        except Exception as e:
+            raise e
 
-    chat_name = REMOVE_CONSECUTIVE_PERIODS.sub('.', chat_name)
+    @staticmethod
+    def delete_chat_if_exists(chat: str):
+        try:
+            chat_name = Langchain.__get_chat_name(chat)
 
-    return chat_name
+            if not exists(chat):
+                raise ValueError(
+                    f"No existe un chat con el nombre '{chat_name}'."
+                )
 
+            delete(chat)
+        except Exception as e:
+            raise e
 
-def __get_and_validate_params(*params):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            missing_params = [
-                param for param in params if not request.json.get(param)]
-            if missing_params:
-                return jsonify({'error': f'No se proporcionaron los siguientes parámetros: {", ".join(missing_params)}'}), 400
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
+    @staticmethod
+    def append_pdf_if_exists(chat: str, pdf: object, pdf_name: str):
+        try:
+            chat_name = Langchain.__get_chat_name(chat)
 
+            if not exists(chat):
+                raise ValueError(f"No existe el chat '{chat_name}'.")
 
-def __generate_chat_name(chat_suffix):
-    username = get_jwt_identity()
-    chat_suffix = __transform_chat_name(chat_suffix, len(username))
+            chat_client = Langchain.__get_chroma_client(chat)
 
-    potential_name = f"{username}._{chat_suffix}"
+            docs = processing(pdf)
 
-    return potential_name
+            if exists_pdf_in(chat, pdf_name):
+                raise ValueError(
+                    f"Ya se agrego '{pdf_name}' al chat '{chat_name}'."
+                )
 
+            new_docs = []
+            ids_docs = []
+            for doc in docs:
+                new_doc = Document(
+                    page_content=doc.page_content,
+                    metadata={
+                        'page': doc.metadata.get('page'),
+                        'pdf': pdf_name
+                    }
+                )
+                new_docs.append(new_doc)
+                ids_docs.append(str(uuid.uuid1()))
 
-def get_index():
-    data = {"message": "Hello desde Langchain!!"}
-    return jsonify(data), 200
+            chat_client.add_documents(
+                new_docs,
+                ids=ids_docs
+            )
 
+        except Exception as e:
+            raise e
 
-@jwt_required()
-@__get_and_validate_params('chat')
-def create_chat(request):
-    # curl -X POST -H "Content-Type: application/json" -d '{"chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/create_chat
-    try:
-        chat_name = request.json.get('chat')
+    @staticmethod
+    def pop_pdf_if_exists(chat: str, pdf: str):
+        try:
+            chat_name = Langchain.__get_chat_name(chat)
 
-        chat = __generate_chat_name(chat_name)
+            if not exists(chat):
+                raise ValueError(f"No existe el chat '{chat_name}'.")
 
-        LangChain.create_chat(chat)
+            pop_pdf_in(chat, pdf)
+        except Exception as e:
+            raise e
 
-        return jsonify({'message': f'Se creo el chat {chat_name} exitosamente'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+    @staticmethod
+    def response(query: str, chat: str) -> str:
+        try:
+            chat_name = Langchain.__get_chat_name(chat)
 
+            if not exists(chat):
+                raise ValueError(
+                    f"No existe el chat '{chat_name}'."
+                )
 
-@jwt_required()
-@__get_and_validate_params('old_value', 'new_value')
-def rename_chat(request):
-    # curl -X PUT -H "Content-Type: application/json" -d '{"old_value": "chat_name", "new_value": "my_new_chat"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/rename-chat
-    try:
-        old_value = request.json.get('old_value', None)
-        new_value = request.json.get('new_value', None)
+            if is_empty(chat):
+                raise ValueError(
+                    f"El chat '{chat_name}' no contiene pdfs."
+                )
 
-        chat = __generate_chat_name(old_value)
-        new_name = __generate_chat_name(new_value)
+            vectorstore = Langchain.__get_chroma_client(chat)
 
-        LangChain.rename_chat_if_exists(chat, new_name)
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
-        return jsonify({'message': f'El chat {old_value} se cambio a {new_value} correctamente!'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+            llm = GoogleGenerativeAI.get_llm()
 
+            combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+            retrieval_chain = create_retrieval_chain(
+                retriever, combine_docs_chain)
 
-@jwt_required()
-@__get_and_validate_params('chat')
-def remove_chat(request):
-    # curl -X DELETE -H "Content-Type: application/json" -d '{"chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/remove-chat
-    try:
-        chat_name = request.json.get('chat')
+            query = {"input": query}
 
-        chat = __generate_chat_name(chat_name)
+            response = retrieval_chain.invoke(query)
 
-        LangChain.delete_chat_if_exists(chat)
+            return response["answer"]
+        except Exception as e:
+            raise e
 
-        return jsonify({'message': f'El chat {chat_name} se eliminó correctamente!'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
-
-
-@jwt_required()
-def append_pdf(request):
-    # curl -X PUT -F "pdf=@/path/to/your/file.pdf" -F "chat=chat_name" -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/append-pdf
-    try:
-        temp_pdf_path = None
-        chat_name = request.form.get('chat')
-        pdf_file = request.files.get('pdf')
-
-        if pdf_file is None:
-            return jsonify({'error': 'No se proporcionó ningún archivo PDF'}), 400
-
-        if chat_name is None:
-            return jsonify({'error': 'El nombre del chat no fue proporcionado'}), 400
-
-        chat = __generate_chat_name(chat_name)
-
-        pdf_name = pdf_file.filename[:-4]  # quito la extension .pdf
-        temp_pdf_path = __save_pdf_to_temp(pdf_file)
-
-        LangChain.append_pdf_if_exists(chat, temp_pdf_path, pdf_name)
-
-        return jsonify({'message': f'El pdf {pdf_name.title()} se agregó al chat {chat_name} correctamente!'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
-    finally:
-        if temp_pdf_path is not None:
-            __delete_temp_file(temp_pdf_path)
-
-
-@jwt_required()
-@__get_and_validate_params('chat', 'pdf')
-def pop_pdf(request):
-    # curl -X PUT -H "Content-Type: application/json" -d '{"pdf": "pdf_name", "chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/pop-pdf
-    try:
-        chat_name = request.json.get('chat')
-        pdf_name = request.json.get('pdf')
-
-        chat = __generate_chat_name(chat_name)
-
-        LangChain.pop_pdf_if_exists(chat, pdf_name)
-
-        return jsonify({'message': f'El pdf {pdf_name} se eliminó del chat {chat_name} correctamente!'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
-
-
-@jwt_required()
-@__get_and_validate_params('chat', 'query')
-def answer(request):
-    # curl -X GET -H "Content-Type: application/json" -d '{"query": "your_query", "chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/langchain/query
-    try:
-        chat_name = request.json.get('chat')
-        query = request.json.get('query')
-
-        chat = __generate_chat_name(chat_name)
-
-        response = LangChain.response(query, chat)
-
-        return jsonify(response), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
-
-
-def list_chats():
-    # This controller is only for testing
-    try:
-        collections = LangChain.list_chats()
-        return jsonify(collections), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+    # This function is only for testing
+    @staticmethod
+    def list_chats():
+        try:
+            return list()
+        except Exception as e:
+            raise e
