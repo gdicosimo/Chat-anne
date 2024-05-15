@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from db.mongodb.schema import SCHEMA
 
 # Constants
@@ -20,11 +20,11 @@ def connect_model(db, model):
     return db[model]
 
 # Search documents in collection
-def search_db(model, query={}):
+def search_db(model, query={},showColumns={}):
     try:
         db = connect_db()
         collection = connect_model(db, model)
-        cursor = collection.find(query)
+        cursor = collection.find(query,showColumns)
         
         # Convert cursor to list of dictionaries
         result = []
@@ -36,6 +36,18 @@ def search_db(model, query={}):
         return result
     except Exception as e:
         raise e
+
+
+def update_one_db(model,filter={},query={}):
+    try:
+        db = connect_db()
+        collection = connect_model(db, model)
+        result = collection.update_one(filter,query)
+        return result
+    except Exception as e:
+        raise e
+
+
 
 # Insert document into collection
 def insert_db(model, data={}):
