@@ -5,16 +5,13 @@ from typing import Optional
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-import chromadb.utils.embedding_functions as embedding_functions
-
 
 class GoogleGenerativeAI:
-    __api_key = None
-    __embedding_model = "models/embedding-001"
     __model = "gemini-pro"
+    __embedding_model = "models/embedding-001"
+    __api_key = None
     __chat_google = None
     __embedding_google = None
-    __embedding_functions = None
 
     @staticmethod
     def __initialize():
@@ -22,7 +19,7 @@ class GoogleGenerativeAI:
             load_dotenv()
             GoogleGenerativeAI.__api_key = os.getenv('GOOGLE_API_KEY')
         except FileNotFoundError as e:
-            raise Exception("No se proporcionó la API key")
+            raise ValueError("No se proporcionó la API key")
 
     @staticmethod
     def __initialize_llm():
@@ -37,13 +34,6 @@ class GoogleGenerativeAI:
             GoogleGenerativeAI.__initialize()
         GoogleGenerativeAI.__embedding_google = GoogleGenerativeAIEmbeddings(
             model=GoogleGenerativeAI.__embedding_model)
-
-    @staticmethod
-    def __initialize_chroma_embedding():
-        if GoogleGenerativeAI.__api_key is None:
-            GoogleGenerativeAI.__initialize()
-        GoogleGenerativeAI.__embedding_functions = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-            api_key=GoogleGenerativeAI.__api_key)
 
     @staticmethod
     def get_model() -> str:
@@ -64,9 +54,3 @@ class GoogleGenerativeAI:
         if GoogleGenerativeAI.__embedding_google is None:
             GoogleGenerativeAI.__initialize_embedding()
         return GoogleGenerativeAI.__embedding_google
-
-    @staticmethod
-    def get_chroma_embedding_function() -> embedding_functions:
-        if GoogleGenerativeAI.__embedding_functions is None:
-            GoogleGenerativeAI.__initialize_chroma_embedding()
-        return GoogleGenerativeAI.__embedding_functions
