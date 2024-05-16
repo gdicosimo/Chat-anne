@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, JWTManager
 
-from routes.langchain import langchain
 from routes.auth import auth
 from routes.chats import chats
 app = Flask(__name__)
@@ -21,7 +20,6 @@ def index_authenticated():
 
 
 def register_blueprints(app):
-    app.register_blueprint(langchain, url_prefix='/langchain')
     app.register_blueprint(auth, url_prefix='/auth')
     app.register_blueprint(chats, url_prefix='/chats')
 

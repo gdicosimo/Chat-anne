@@ -4,7 +4,8 @@ import os
 import re
 
 from bson import ObjectId
-from flask_jwt_extended import jsonify, get_jwt_identity, current_app
+from flask import current_app, jsonify
+from flask_jwt_extended import get_jwt_identity
 
 from db.mongodb.mongo import search_db, insert_db, update_one_db
 
@@ -12,7 +13,7 @@ from controllers.langchain_controller import Langchain
 
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'
-OWNER = get_jwt_identity()  # Chequear esto
+#OWNER = get_jwt_identity()  # Chequear esto
 
 REMOVE_INVALID_CHARACTERS = re.compile(r'[^a-zA-Z0-9\-_\.]')
 REMOVE_START_END_NON_ALPHANUM = re.compile(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$')
@@ -58,17 +59,20 @@ def __generate_chat_name(id_chat):
     return __transform_chat_name(id_chat)
 
 
-def create_chat(id_chat):
+
+
+
+def create_chat(chat_name):
     try:
+        #chat = __generate_chat_name(id_chat)
 
         id_chat = insert_db(MODEL_CHAT, {
-            'owner': OWNER,
+            'owner': get_jwt_identity(),
             'created_at': datetime.now(),
-            'name': chat
+            'name': chat_name
         })
 
-        chat = __generate_chat_name(id_chat)
-        Langchain.create_chat(chat)
+        Langchain.create_chat(str(id_chat))
 
         return jsonify({"id_chat ": str(id_chat)}), 200
     except Exception as e:
@@ -105,12 +109,21 @@ def append_pdf(chat_id, pdf_file):
 
         pdf_name = pdf_file.filename[:-4]  # quito la extension .pdf
 
-        update_one_db  # Aca deberias agregar el nombre del pdf
+        chat = search_db(MODEL_CHAT, {
+            '_id': ObjectId(chat_id),
+            'owner': get_jwt_identity()
+        })
+
+        if len(chat) == 0:
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+
+        chat = update_one_db(MODEL_CHAT, {'_id': ObjectId(chat_id)},
+                             {'$push': {'pdfs': pdf_name}})
 
         temp_pdf_path = __save_pdf_to_temp(pdf_file)
 
-        chat = __generate_chat_name(chat_id)
-        Langchain.append_pdf_if_exists(chat, temp_pdf_path, pdf_name)
+        #chat = __generate_chat_name(chat_id)
+        Langchain.append_pdf_if_exists(chat_id, temp_pdf_path, pdf_name)
 
         return jsonify({'message': f'El pdf {pdf_name.title()} se agregó al chat {chat_id} correctamente!'}), 200
     except Exception as e:
@@ -137,14 +150,14 @@ def answer_and_save_message(id_chat, query):
 
         chat = search_db(MODEL_CHAT, {
             '_id': ObjectId(id_chat),
-            'owner': OWNER
+            'owner': get_jwt_identity()
         })
 
         if len(chat) == 0:
             return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
 
-        chat = __generate_chat_name(id_chat)
-        response = Langchain.response(query, chat)
+        #chat = __generate_chat_name(id_chat)
+        response = Langchain.response(query, id_chat, chat[0]['name'])
 
         new_message = {
             'query': query,
@@ -164,9 +177,23 @@ def answer_and_save_message(id_chat, query):
 # Devuelve solo los id y nombres de los chats
 def get_chats():
     try:
-        list = search_db(MODEL_CHAT, {'owner': OWNER}, {
-                         '_id': 1, 'name': 1})
+        list = search_db(MODEL_CHAT, {'owner': get_jwt_identity()}, {
+            '_id': 1, 'name': 1})
         return jsonify({'chats': list}), 200
+    except Exception as e:
+        return jsonify({'err': str(e)}), 400
+
+
+def get_messages_from_chat(id_chat):
+    try:
+        chat = search_db(MODEL_CHAT,{
+            '_id': ObjectId(id_chat),
+            'owner': get_jwt_identity()
+        })
+        if len(chat) == 0:
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+
+        return jsonify({'chat': chat[0]}), 200
     except Exception as e:
         return jsonify({'err': str(e)}), 400
 
