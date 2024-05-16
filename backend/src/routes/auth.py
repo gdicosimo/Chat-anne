@@ -8,7 +8,7 @@ auth = Blueprint('auth', __name__)
 @auth.route('/', methods=['GET'])
 def index():
     data = {"message": "Hello desde auth"}
-    return jsonify(data), 400
+    return jsonify(data), 200
 
 
 """
