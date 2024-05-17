@@ -28,7 +28,7 @@
     }
 
     .panel {
-        @apply w-full pcsmall:w-1/3 pclarge:w-1/5 absolute h-full bg-color-lightblack/20 right-0 z-10 backdrop-blur-lg border-l-2 border-color-lightblack
+        @apply w-full pcsmall:w-1/3 pclarge:w-1/5 absolute h-full bg-color-lightblack/20 right-0 z-10 backdrop-blur-lg border-l-2 border-color-lightblack overflow-y-auto scrollbar scrollbar-thumb-color-lightblack
     }
 
     .container-panel {

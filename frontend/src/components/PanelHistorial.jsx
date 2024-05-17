@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { chat, cross, trash } from '../assets'
+import useFetch from '../Hooks/useFetch';
+import { OrbitProgress } from 'react-loading-indicators';
 
 const historial  = [
     { id: 1, nombre: "Java" },
@@ -12,8 +14,22 @@ const historial  = [
     { id: 8, nombre: "Derivadas" },
   ];
 
-function PanelHistorial({setPanelOpen}) {
+function PanelHistorial({setPanelOpen, panelOpen}) {
   const [ventanaAbierta, setVentanaAbierta] = useState(false);
+  const { data, loading, error, fetchdata } = useFetch();
+  const [chats, setChats] = useState(null)
+  useEffect(()=>{
+    async function getChats(){
+      await fetchdata(null, 'GET_LIST_CHATS')
+    }
+    if (panelOpen) {
+      getChats()
+    }
+  },[panelOpen])
+
+  useEffect(()=>{
+    data ? setChats(data['chats']) : null
+  }, [data])
 
   const abrirVentana = () => {
     setVentanaAbierta(true);
@@ -22,6 +38,9 @@ function PanelHistorial({setPanelOpen}) {
   const cerrarVentana = () => {
     setVentanaAbierta(false);
   };
+
+
+
   return (
       <>
         <div className='panel'>
@@ -30,14 +49,20 @@ function PanelHistorial({setPanelOpen}) {
               <div className ='historial '>
                 <ul>
                     {
-                    historial.map(item => (
-                      <div key={item.id} className='container-panel justify-between my-2'>
-                        <div className='flex flex-row gap-2'>
-                          <img src={chat} alt="Chat" />
-                          <h1 className='font-poppins font-medium text-base whitespace-nowrap overflow-hidden overflow-ellipsis'>{item.nombre}</h1>
+                      loading ? (
+                        <div className='items-center flex flex-col'>
+                          <OrbitProgress variant='bubble-dotted' color='#FDF0D5' size='small' text='' textColor='' easing='ease-in-out' />
                         </div>
-                        <img src={trash} className='btn-animated h-5' alt="Delete" onClick={abrirVentana}/>
-                      </div>))
+                      ) : (
+                      chats?.map(item => (
+                        <div key={item['_id']} className='container-panel justify-between my-2'>
+                          <div className='flex flex-row gap-2'>
+                            <img src={chat} alt="Chat" />
+                            <h1 className='font-poppins font-medium text-base whitespace-nowrap overflow-hidden overflow-ellipsis'>{item['name']}</h1>
+                          </div>
+                          <img src={trash} className='btn-animated h-5' alt="Delete" onClick={abrirVentana}/>
+                        </div>))
+                      )
                     }
                 </ul>
               </div>

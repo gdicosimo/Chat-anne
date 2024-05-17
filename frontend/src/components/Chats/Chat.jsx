@@ -1,12 +1,32 @@
 import React, { useEffect, useState } from 'react'
+import useFetch from '../../Hooks/useFetch'
 
-const Chat = ({messages, refresh}) => {
+const Chat = ({messages, chatId, refresh, files}) => {
   const [msg, setMsg] = useState(messages)
+  const [bot_response, setBotResponse] = useState(null)
+  const {data, loading, error, fetchdata} = useFetch()
+
   useEffect(()=>{
-    console.log("newmsg")
-    console.log(messages)
+    console.log(chatId["id_chat "])
+    async function sendForm(form){
+      await fetchdata(form, 'GET_ADD_DOC');
+    }
+    if (chatId) {
+      const form = new FormData();
+      form.append("id_chat", chatId);
+      form.append("pdf", files[0]);
+
+    }
+    //enviarForm con pdfs
+  },[chatId])
+
+  useEffect(()=>{
+    
     setMsg(messages)
-  },[refresh])
+
+  }, [refresh, bot_response])
+
+
   return (
     <div className='flex flex-col w-full gap-2'>
       {

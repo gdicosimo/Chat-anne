@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import apiPaths from '../environment/apiPaths';
+import {apiPaths} from '../environment/apiPaths';
 
 const useAuth = () => {
   const [error, setError] = useState(null);

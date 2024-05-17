@@ -6,7 +6,7 @@ import Panel from './PanelDesplegado/PanelOpciones'
 import FilesLoaded from './Chats/FilesLoaded'
 import { Link } from 'react-router-dom'
 
-const Header = ({setButtonOpen, files, setFiles}) => {
+const Header = ({setButtonOpen, files, setFiles, chatId, chatName}) => {
   
 
   function openPanel ()  {
@@ -21,7 +21,7 @@ const Header = ({setButtonOpen, files, setFiles}) => {
       <div className='py-[20px] flex flex-row justify-between w-full border-b-2 border-color-lightblack items-center'>
           <div className='flex flex-row items-center justify-start gap-3 max-w-[80%] overflow-x-clip rounded-lg'>
             <h1 onClick={()=>{window.location.reload()}} className='hover:cursor-pointer whitespace-nowrap'>Chat-anne</h1>
-            <Chatname/>
+            <Chatname chatId={chatId} name={chatName}/>
           </div>
           <img onClick={openPanel} src={options} className='btn-animated items-baseline'/>
       </div>

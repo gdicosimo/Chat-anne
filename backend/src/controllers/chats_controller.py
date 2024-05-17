@@ -157,7 +157,8 @@ def answer_and_save_message(id_chat, query):
             return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
 
         #chat = __generate_chat_name(id_chat)
-        response = Langchain.response(query, id_chat, chat[0]['name'])
+        #response = Langchain.response(query, id_chat, chat[0]['name'])
+        response = Langchain.response(query, id_chat)
 
         new_message = {
             'query': query,
