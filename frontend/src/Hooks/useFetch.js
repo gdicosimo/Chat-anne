@@ -5,18 +5,24 @@ const useFetch = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null)
-    const fetchdata = async (body, endpoint) => {
+    const fetchdata = async (body, endpoint, queryParams, pdfs=false) => {
         setError(null);
         setLoading(true);
         console.log(body, apiPaths[endpoint], endpointMethods[endpoint])
+        let finalEndpoint = apiPaths[endpoint];
+        if (queryParams){
+            finalEndpoint = apiPaths[endpoint].concat("?id=", queryParams)
+        }
+        //console.log(finalEndpoint)
+        //console.log(body ? ( pdfs ? body : JSON.stringify(body)):null)
         try {
-        const response = await fetch(apiPaths[endpoint], {
+        const response = await fetch(finalEndpoint, {
             method: endpointMethods[endpoint],
             headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': pdfs ? 'multipart/form-data' : 'application/json',
             },
             credentials: 'include',
-            body: body ? JSON.stringify(body) : null,
+            body: body ? ( pdfs ? body : JSON.stringify(body)):null,
         });
 
         if (response.ok) {

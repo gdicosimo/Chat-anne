@@ -66,7 +66,7 @@ def create_chat(chat_name):
         id_chat = insert_db(MODEL_CHAT, {
             'owner': get_jwt_identity(),
             'created_at': datetime.now(),
-            'name': chat_name
+            'name': str(chat_name)
         })
 
         Langchain.create_chat(str(id_chat))

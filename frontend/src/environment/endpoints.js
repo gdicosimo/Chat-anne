@@ -6,8 +6,8 @@ const endpoints = {
   CREATE_CHAT: '/chats/',
   SEND_MSG: '/chats/message',
   LIST_CHATS: '/chats/',
-  RENAME: '/chats/modified',
-  ADD_DOC: 'chats/append-pdf', //formdata
+  RENAME: '/chats/rename-chat',
+  ADD_DOC: '/chats/append-pdf', //formdata
   GET_MSGS: '/chats/messages' //formdata
 };
 

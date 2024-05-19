@@ -7,12 +7,12 @@ const PanelOpciones = ({setButtonOpen, setOpenHistorial}) => {
   const [newchats, setButtonChat] = useState(false);
   const [historial, setButtonHistorial] = useState(false);
   
-  const logged = false;
+  const logged = true;
   const closePanel = () => {
       setButtonOpen(false)
     }
     const newChat = () => {
-      window.location.reload()
+      window.location.href = "/chat/0"
       setButtonChat(false)
     }
     const openhistorial = () => {

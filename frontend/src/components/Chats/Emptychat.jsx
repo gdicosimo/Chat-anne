@@ -4,7 +4,7 @@ import DragDrop from '../DragDrop/DragDrop'
 
 const Emptychat = ({files, setFiles}) => {
   return (
-    <div className='flex flex-col gap-4 w-full'>
+    <div className='flex flex-col gap-4 w-full py-10'>
         <div className='flex flex-col bg-color-middleblack p-8 items-start border-[1px] border-color-cream rounded-3xl gap-4 hover:cursor-default'>
             <div className="relative">
                 <div className="w-[60px] h-[60px] left-0 bottom-0 mb-2 absolute 
