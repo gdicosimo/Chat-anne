@@ -61,9 +61,13 @@ function PanelHistorial({setPanelOpen, panelOpen}) {
                             <h1 className='font-poppins font-medium text-base whitespace-nowrap overflow-hidden overflow-ellipsis'>{item['name']}</h1>
                           </div>
                           <img src={trash} className='btn-animated h-5' alt="Delete" onClick={abrirVentana}/>
-                        </div>))
+                        </div>
+                        ))
                       )
                     }
+                        {
+                          //onClick enviar a pagina inicial y como routeparams pasar nombre del chat e id
+                        }
                 </ul>
               </div>
           </div>   

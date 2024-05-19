@@ -21,7 +21,7 @@ function App() {
 
   useEffect(()=>{
     async function fetch(){
-      await fetchdata({name_chat: "untitled_3"}, 'GET_CREATE_CHAT')
+      await fetchdata({name_chat: "prueba"}, 'GET_CREATE_CHAT') //cuando se cargan los archivos, se manda a crear el chat
     }
     if (filesLoaded.length > 0){
       fetch()
@@ -29,7 +29,7 @@ function App() {
   }, [filesLoaded.length])
 
   useEffect(()=>{
-    data ? setChatId(data) : null
+    data ? setChatId(data) : null //al crear el chat, la API envia el id de este. Entonces lo seteamos
   },[data])
 
 

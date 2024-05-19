@@ -22,7 +22,7 @@ const useAuth = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        window.location.href = "/chat";
+        endpoint === 'GET_LOGIN' ? window.location.href = "/chat" : window.location.href = "/login";
       } else {
         setError('Error al iniciar sesión, intenta nuevamente');
       }
