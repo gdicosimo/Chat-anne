@@ -13,7 +13,7 @@ from controllers.langchain_controller import Langchain
 
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'
-#OWNER = get_jwt_identity()  # Chequear esto
+# OWNER = get_jwt_identity()  # Chequear esto
 
 REMOVE_INVALID_CHARACTERS = re.compile(r'[^a-zA-Z0-9\-_\.]')
 REMOVE_START_END_NON_ALPHANUM = re.compile(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$')
@@ -59,12 +59,9 @@ def __generate_chat_name(id_chat):
     return __transform_chat_name(id_chat)
 
 
-
-
-
 def create_chat(chat_name):
     try:
-        #chat = __generate_chat_name(id_chat)
+        # chat = __generate_chat_name(id_chat)
 
         id_chat = insert_db(MODEL_CHAT, {
             'owner': get_jwt_identity(),
@@ -83,7 +80,7 @@ def rename_chat(old_value, new_value):
     try:
         # aca langchain en realidad no deberia hacer nada dado que ahora nos manejamos con el id
 
-        update_one_db  # deberias chequear que no haya repetidos ?
+        update_one_db
 
         return jsonify({'message': f'El chat {old_value} se cambio a {new_value} correctamente!'}), 200
     except Exception as e:
@@ -93,10 +90,9 @@ def rename_chat(old_value, new_value):
 def remove_chat(chat_name):
     try:
 
-        update_one_db  # eliminar el pdf del chat
+        update_one_db
 
-        chat = __generate_chat_name(chat_name)
-        Langchain.delete_chat_if_exists(chat)
+        Langchain.delete_chat_if_exists(chat_name)
 
         return jsonify({'message': f'El chat {chat_name} se eliminó correctamente!'}), 200
     except Exception as e:
@@ -122,7 +118,7 @@ def append_pdf(chat_id, pdf_file):
 
         temp_pdf_path = __save_pdf_to_temp(pdf_file)
 
-        #chat = __generate_chat_name(chat_id)
+        # chat = __generate_chat_name(chat_id)
         Langchain.append_pdf_if_exists(chat_id, temp_pdf_path, pdf_name)
 
         return jsonify({'message': f'El pdf {pdf_name.title()} se agregó al chat {chat_id} correctamente!'}), 200
@@ -135,10 +131,11 @@ def append_pdf(chat_id, pdf_file):
 
 def pop_pdf(id_chat, pdf_name):
     try:
-        update_one_db  # Aca eliminar el nombre del pdf
 
-        chat = __generate_chat_name(id_chat)
-        Langchain.pop_pdf_if_exists(chat, pdf_name)
+        update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {
+                      '$pull': {'pdfs': pdf_name}})
+
+        Langchain.pop_pdf_if_exists(id_chat, pdf_name)
 
         return jsonify({'message': f'El pdf {pdf_name} se eliminó del chat {id_chat} correctamente!'}), 200
     except Exception as e:
@@ -156,8 +153,7 @@ def answer_and_save_message(id_chat, query):
         if len(chat) == 0:
             return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
 
-        #chat = __generate_chat_name(id_chat)
-        #response = Langchain.response(query, id_chat, chat[0]['name'])
+        # chat = __generate_chat_name(id_chat)
         response = Langchain.response(query, id_chat)
 
         new_message = {
@@ -187,7 +183,7 @@ def get_chats():
 
 def get_messages_from_chat(id_chat):
     try:
-        chat = search_db(MODEL_CHAT,{
+        chat = search_db(MODEL_CHAT, {
             '_id': ObjectId(id_chat),
             'owner': get_jwt_identity()
         })

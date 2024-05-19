@@ -23,15 +23,13 @@ def __get_and_validate_params(*params):
     return decorator
 
 
-
 @__get_and_validate_params('id_chat')
 # curl -X POST -H "Content-Type: application/json" -d '{"id_chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/chats/
 @chats.route('/', methods=['POST'])
 @jwt_required()
 def create_chat_route():
-    chat = request.json.get('name_chat')
+    chat = request.json.get('id_chat')
     return create_chat(chat)
-
 
 
 @__get_and_validate_params('old_value', 'new_value')
@@ -44,7 +42,6 @@ def rename_chat():
     return rename_chat(old_value, new_value)
 
 
-
 @__get_and_validate_params('id_chat')
 # curl -X DELETE -H "Content-Type: application/json" -d '{"chat": "chat_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/chats/remove-chat
 @chats.route('/remove-chat', methods=['DELETE'])
@@ -52,7 +49,6 @@ def rename_chat():
 def remove_chat_route():
     chat_name = request.json.get('id_chat')
     return remove_chat(chat_name)
-
 
 
 # curl -X PUT -F "pdf=@/path/to/your/file.pdf" -F "chat=chat_name" -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/chats/append-pdf
@@ -72,7 +68,6 @@ def append_pdf_route():
     return append_pdf(chat_id, pdf_file)
 
 
-
 @__get_and_validate_params('id_chat', 'pdf_name')
 # curl -X PUT -H "Content-Type: application/json" -d '{"id_chat": "chat_name", "pdf_name": "pdf_name"}' -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/chats/pop-pdf
 @chats.route('/pop-pdf', methods=['PUT'])
@@ -81,7 +76,6 @@ def pop_pdf_route():
     id_chat = request.json.get('id_chat')
     pdf_name = request.json.get('pdf_name')
     return pop_pdf(id_chat, pdf_name)
-
 
 
 @__get_and_validate_params('id_chat', 'query')
@@ -94,13 +88,13 @@ def message_route():
     return answer_and_save_message(id_chat, query)
 
 
-
 @__get_and_validate_params()
 # curl -X GET -H "Content-Type: application/json" -d  -H "Authorization: Bearer YOUR_JWT_TOKEN" http://localhost:5000/chats/
 @chats.route('/', methods=['GET'])
 @jwt_required()
 def get_chats_route():
     return get_chats()
+
 
 @chats.route('/messages', methods=['GET'])
 @jwt_required()
