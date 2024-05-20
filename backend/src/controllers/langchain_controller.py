@@ -99,10 +99,7 @@ class Langchain:
 
             llm = GoogleGenerativeAI.get_llm()
 
-            combine_docs_chain = create_stuff_documents_chain(
-                llm = llm, 
-                prompt = prompt,
-            )
+            combine_docs_chain = create_stuff_documents_chain(llm,prompt)
             retrieval_chain = create_retrieval_chain(
                 retriever, combine_docs_chain)
 

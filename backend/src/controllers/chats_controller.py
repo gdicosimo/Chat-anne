@@ -11,8 +11,6 @@ from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
 from controllers.langchain_controller import Langchain
 
-from langchain.memory import ConversationBufferMemory
-
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'
 # OWNER = get_jwt_identity()  # Chequear esto
@@ -170,7 +168,7 @@ def answer_and_save_message(id_chat, query):
         chat = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)},
                              {'$push': {'messages': new_message}},
                              )
-        #{'$set': {'memory': chat[0]['memory'].save_context({"input": query}, {"output": response})}}
+
         # Aca creo que deberiamos mandar la respuest
         return jsonify(response), 200
     except Exception as e:
