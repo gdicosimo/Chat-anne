@@ -7,7 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 
 class GoogleGenerativeAI:
-    __model = "gemini-pro"
+    __model = "gemini-1.5-pro-latest"
     __embedding_model = "models/embedding-001"
     __api_key = None
     __chat_google = None
