@@ -14,9 +14,9 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
     console.log(messages)
     async function sendFiles(){
       const form = new FormData();
-      form.append("pdf", files[0]);
+      form.append("pdf_file", files[0]);
       console.log(files[0])
-      form.append("id_chat", chatId['id_chat ']);
+      form.append("id_chat", '664a8f0058832b1c62e9b746');
       const d = Object.fromEntries(form.entries());
       console.log(d);
       await fetchdataPdf(form, 'GET_ADD_DOC', null, true)

@@ -54,7 +54,7 @@ def remove_chat_route():
 @__get_and_validate_params('id_chat', 'pdf_file')
 def append_pdf_route():
     chat_id = request.form.get('id_chat')
-    pdf_file = request.files.get('pdf')
+    pdf_file = request.files.get('pdf_file')
 
     if not pdf_file:
         return jsonify({'error': 'No PDF file provided'}), 400
