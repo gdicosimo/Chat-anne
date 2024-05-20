@@ -6,9 +6,9 @@ import DragDropLogic from '../DragDrop/DragDropLogic'
 const FilesLoaded = ({files, setFiles}) => {
     const inputRef = useRef(null)
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
-    }, [files.length])
+    // }, [files.length])
   return (
     <div className='flex flex-row gap-2 w-full overflow-x-auto scrollbar hover:scrollbar-thumb-color-lightblack my-2 items-center transition-all'>
         <input
@@ -21,12 +21,12 @@ const FilesLoaded = ({files, setFiles}) => {
             accept=".pdf"
         />
         {
-            files[0] != null ? (<img src={add} className='h-6 mr-3 btn-animated' onClick={()=>DragDropLogic.openFileExplorer(inputRef)}/>) : null
+            files != null ? (<img src={add} className='h-6 mr-3 btn-animated' onClick={()=>DragDropLogic.openFileExplorer(inputRef)}/>) : null
         }
         {
-            files[0] != null ? (
-                files.map((file)=>(
-                    <div key={file.id}>
+            files != null ? (
+                files.map((file, index)=>(
+                    <div key={index}>
                         <FileContainer file={file}/>
                     </div>
                 ))

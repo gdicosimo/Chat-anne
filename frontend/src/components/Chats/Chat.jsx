@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import useFetch from '../../Hooks/useFetch'
 import Footer from '../Footer'
 import { ThreeDot } from 'react-loading-indicators'
+import { useParams } from 'react-router-dom'
 const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
   const [msg, setMsg] = useState(messages)
   const {data, loading, error, fetchdata} = useFetch()
@@ -26,11 +27,11 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
   //     setSend(false)
   //   }
   // },[sendPdfs])
-
+  const { id } = useParams()
   useEffect(()=>{
     async function sendMsg(msg){
       const body = {
-        id_chat: chatId['id_chat '],
+        id_chat: id != '0' ? id : chatId['id_chat '],
         query: msg
       }
       await fetchdata(body, 'GET_SEND_MSG', null)

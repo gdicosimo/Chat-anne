@@ -20,7 +20,8 @@ function App() {
   const { id } = useParams()
   const {data, loading, error, fetchdata}  = useFetch()
   const [sendPdfs, setSendPdfs] = useState(false)
-
+  const [chatName, setChatName] = useState(null)
+  const [chatFiles, setChatFiles ] = useState(null)
   async function fetch(existingChat){
     if (!existingChat){
       await fetchdata({id_chat: "untitled"}, 'GET_CREATE_CHAT', null) //cuando se cargan los archivos, se manda a crear el chat
@@ -52,12 +53,15 @@ function App() {
       if (id === '0'){
         setChatId(data)
       } else {
+        console.log(data)
         console.log(data.chat.messages)
         console.log(data.chat.name)
         console.log(data.chat._id)
         setMessages(data.chat.messages)
         setChatId(data.chat._id)
         setRefresh(!refresh)
+        setChatName(data.chat.name)
+        setChatFiles(data.chat.pdfs)
       }
     }
     //data ? setChatId(data) : null //al crear el chat, la API devuelve el id de este. Entonces lo seteamos
@@ -73,7 +77,7 @@ function App() {
           <title>Chat-anne</title>
           <link rel='icon' type='image/png' href={add} sizes='any'/>
       </Helmet>
-      <Header files={filesLoaded} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen} chatId={chatId} chatName={id === '0' ? 'untitled chat' : data != null ? data.chat.name : null}/>
+      <Header files={chatFiles} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen} chatId={chatId} chatName={chatName ? chatName :  'untitled chat' }/>
       {
         open ? 
           <PanelOpciones setButtonOpen={setButtonOpen} setOpenHistorial={setOpenHistorial}/> : (
@@ -88,7 +92,7 @@ function App() {
       }
       <div className='w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
         {id !== '0' && data != null ? (
-          <Chat messages={data.chat.messages} chatId={data.chat._id} refresh={refresh} files={filesLoaded} />
+          <Chat messages={messages} chatId={chatId}  refresh={refresh} files={filesLoaded} />
         ) : id === '0' ? (
           filesLoaded.length === 0 ? (
             <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>

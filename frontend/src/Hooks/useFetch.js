@@ -8,7 +8,7 @@ const useFetch = () => {
     const fetchdata = async (body, endpoint, queryParams, pdfs=false) => {
         setError(null);
         setLoading(true);
-        console.log(body, apiPaths[endpoint], endpointMethods[endpoint])
+        console.log("USEFETCH:", body, apiPaths[endpoint], endpointMethods[endpoint], queryParams)
         let finalEndpoint = apiPaths[endpoint];
         if (queryParams){
             finalEndpoint = apiPaths[endpoint].concat("?id_chat=", queryParams)

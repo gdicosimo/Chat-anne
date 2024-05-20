@@ -39,6 +39,9 @@ function PanelHistorial({ setPanelOpen, panelOpen }) {
     setVentanaAbierta(true);
   };
 
+  function eliminarChat(){
+    
+  }
   const cerrarVentana = () => {
     setVentanaAbierta(false);
   };
@@ -83,7 +86,8 @@ function PanelHistorial({ setPanelOpen, panelOpen }) {
             <h2 className='w-full text-center mb-10'>Esta acción no podrá deshacerse</h2>
             <div className="flex flex-row items-center justify-between gap-2">
               <button
-                className='bg-color-cream h-min py-4 px-6 rounded-xl btn-animated font-poppins flex-1' onClick={cerrarVentana}>
+                className='bg-color-cream h-min py-4 px-6 rounded-xl btn-animated font-poppins flex-1' 
+                onClick={()=>{cerrarVentana()}}>
                 Aceptar
               </button>
               <button
