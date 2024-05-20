@@ -34,16 +34,16 @@ def create_chat_route():
 
 @chats.route('/rename-chat', methods=['PUT'])
 @jwt_required()
-@__get_and_validate_params('old_value', 'new_value')
+@__get_and_validate_params('id_chat', 'new_value')
 def rename_chat_route():
-    old_value = request.json.get('old_value')
+    id_chat = request.json.get('id_chat')
     new_value = request.json.get('new_value')
-    return rename_chat_controller(old_value, new_value)
+    return rename_chat_controller(id_chat, new_value)
 
 
 @chats.route('/remove-chat', methods=['DELETE'])
 @jwt_required()
-@__get_and_validate_params('id_chat')
+#@__get_and_validate_params('id_chat')
 def remove_chat_route():
     chat_name = request.json.get('id_chat')
     return remove_chat(chat_name)

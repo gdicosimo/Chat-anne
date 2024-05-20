@@ -7,7 +7,7 @@ from bson import ObjectId
 from flask import current_app, jsonify
 from flask_jwt_extended import get_jwt_identity
 
-from db.mongodb.mongo import search_db, insert_db, update_one_db
+from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
 from controllers.langchain_controller import Langchain
 
@@ -76,27 +76,27 @@ def create_chat(chat_name):
         return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
-def rename_chat(old_value, new_value):
+def rename_chat(id_chat, new_value):
     try:
-        # aca langchain en realidad no deberia hacer nada dado que ahora nos manejamos con el id
+        if not search_db(MODEL_CHAT,{'_id': ObjectId(id_chat)}):
+            return jsonify({'message': 'El chat no existe'}), 400
 
-        update_one_db
+        isUpdated = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {'$set': {'name': new_value}})
 
-        return jsonify({'message': f'El chat {old_value} se cambio a {new_value} correctamente!'}), 200
+        return jsonify({'message': f'El chat {id_chat} se cambio a {new_value} correctamente!'}), 200
     except Exception as e:
         return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
 def remove_chat(chat_name):
     try:
-
-        update_one_db
-
+        isRemoved = delete_one_db(MODEL_CHAT,{'_id': ObjectId(chat_name)})
+        print(isRemoved)
         Langchain.delete_chat_if_exists(chat_name)
 
         return jsonify({'message': f'El chat {chat_name} se eliminó correctamente!'}), 200
     except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 400
 
 
 def append_pdf(chat_id, pdf_file):
@@ -110,7 +110,7 @@ def append_pdf(chat_id, pdf_file):
         })
 
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
         chat = update_one_db(MODEL_CHAT, {'_id': ObjectId(chat_id)},
                              {'$push': {'pdfs': pdf_name}})

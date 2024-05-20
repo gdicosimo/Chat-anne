@@ -38,6 +38,16 @@ def search_db(model, query={},showColumns={}):
         raise e
 
 
+def delete_one_db(model, query={}):
+    try:
+        db = connect_db()
+        collection = connect_model(db, model)
+        result = collection.delete_one(query)
+        return result
+    except Exception as e:
+        raise e
+
+
 def update_one_db(model,filter={},query={}):
     try:
         db = connect_db()
