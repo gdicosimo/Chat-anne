@@ -102,7 +102,6 @@ def remove_chat(chat_name):
 def append_pdf(chat_id, pdf_file):
     try:
         temp_pdf_path = None
-
         pdf_name = pdf_file.filename[:-4]  # quito la extension .pdf
 
         chat = search_db(MODEL_CHAT, {

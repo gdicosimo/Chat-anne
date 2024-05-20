@@ -9,7 +9,7 @@ import Chat from './components/Chats/Chat'
 import Emptychat from './components/Chats/Emptychat'
 import useFetch from './Hooks/useFetch'
 import { useParams } from "react-router-dom";
-
+import { OrbitProgress } from 'react-loading-indicators'
 function App() {
   const [open, setButtonOpen] = useState(false);
   const [openHistorial, setOpenHistorial] = useState(false)
@@ -30,18 +30,21 @@ function App() {
   }
 
   
-  useEffect(()=>{
-    if (id === '0' && filesLoaded.length > 0){
-      fetch(false)
-      setSendPdfs(true)
-    }
-  }, [filesLoaded.length])
+  // useEffect(()=>{
+  //   if (id === '0' && filesLoaded.length > 0){
+  //     fetch(false)
+  //     setSendPdfs(true)
+  //   }
+  // }, [filesLoaded.length])
 
   useEffect(()=>{
+    console.log('hola')
     if (id != '0'){
       fetch(true)
-      console.log('ID CHANGED')
+    } else {
+      fetch(false)
     }
+    console.log('ID CHANGED')
   }, [id])
 
   useEffect(()=>{
@@ -60,6 +63,10 @@ function App() {
     //data ? setChatId(data) : null //al crear el chat, la API devuelve el id de este. Entonces lo seteamos
   },[data])
 
+  useEffect(()=>{
+    console.log(loading)
+  }, [loading])
+
   return (
     <div className='bg-color-black pclarge:h-lvh h-dvh w-dvw flex flex-col items-center justify-between'>
       <Helmet>
@@ -73,12 +80,18 @@ function App() {
             openHistorial ? <PanelHistorial setPanelOpen={setOpenHistorial} panelOpen={openHistorial}/> : null
           )
       }
+      {
+        loading ? 
+        <div className='items-center flex flex-col absolute w-full h-full bg-color-lightblack/20 z-50 justify-center backdrop-blur-lg'>
+          <OrbitProgress variant='bubble-dotted' color='#FDF0D5' size='small' text='' textColor='' easing='ease-in-out' />
+        </div> : null
+      }
       <div className='w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
         {id !== '0' && data != null ? (
           <Chat messages={data.chat.messages} chatId={data.chat._id} refresh={refresh} files={filesLoaded} />
         ) : id === '0' ? (
           filesLoaded.length === 0 ? (
-            <Emptychat files={filesLoaded} setFiles={setFilesLoaded} />
+            <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>
           ) : <Chat messages={messages} chatId={chatId} refresh={refresh} files={filesLoaded} sendPdfs={sendPdfs} setSend={setSendPdfs}/>
         ) : null
         }

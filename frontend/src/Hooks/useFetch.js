@@ -11,7 +11,7 @@ const useFetch = () => {
         console.log(body, apiPaths[endpoint], endpointMethods[endpoint])
         let finalEndpoint = apiPaths[endpoint];
         if (queryParams){
-            finalEndpoint = apiPaths[endpoint].concat("?id=", queryParams)
+            finalEndpoint = apiPaths[endpoint].concat("?id_chat=", queryParams)
         }
         //console.log(finalEndpoint)
         //console.log(body ? ( pdfs ? body : JSON.stringify(body)):null)

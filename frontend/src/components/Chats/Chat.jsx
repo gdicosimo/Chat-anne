@@ -9,28 +9,28 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
   const [mensajeNuevo, setMensajeNuevo] = useState('')
   const messageContainerRef = useRef(null);
 
-  useEffect(()=>{
-    console.log(chatId['id_chat '])
-    console.log(messages)
-    async function sendFiles(){
-      const form = new FormData();
-      form.append("pdf_file", files[0]);
-      console.log(files[0])
-      form.append("id_chat", '664a8f0058832b1c62e9b746');
-      const d = Object.fromEntries(form.entries());
-      console.log(d);
-      await fetchdataPdf(form, 'GET_ADD_DOC', null, true)
-    }
-    if (sendPdfs){
-      sendFiles()
-      setSend(false)
-    }
-  },[sendPdfs])
+  // useEffect(()=>{
+  //   console.log(chatId['id_chat '])
+  //   console.log(messages)
+  //   async function sendFiles(){
+  //     const form = new FormData();
+  //     form.append("pdf_file", files[0]);
+  //     console.log(files[0])
+  //     form.append("id_chat", '664a8f0058832b1c62e9b746');
+  //     const d = Object.fromEntries(form.entries());
+  //     console.log(d);
+  //     await fetchdataPdf(form, 'GET_ADD_DOC', null, true)
+  //   }
+  //   if (sendPdfs){
+  //     sendFiles()
+  //     setSend(false)
+  //   }
+  // },[sendPdfs])
 
   useEffect(()=>{
     async function sendMsg(msg){
       const body = {
-        id_chat: chatId,
+        id_chat: chatId['id_chat '],
         query: msg
       }
       await fetchdata(body, 'GET_SEND_MSG', null)
@@ -56,14 +56,12 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
   }
 
   useEffect(()=>{
-    console.log(msg)
-    console.log("MESSSS", messages)
     scrollBottom()
   }, [msg, loading, messages])
 
-  useEffect(()=>{
-    console.log(dataPdf)
-  },[dataPdf])
+  // useEffect(()=>{
+  //   console.log(dataPdf)
+  // },[dataPdf])
 
   useEffect(()=>{
     //window.location.reload()
@@ -85,7 +83,7 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
           ))
         }
         {
-          loading || loadingPdf ? 
+          loading ? 
           <div className='bot-msg px-4 py-2 items-center'>
             <ThreeDot variant="bob" color="#FDF0D5" size="small" text={loadingPdf ? 'Uploading files' : null} textColor="" />
           </div> : null

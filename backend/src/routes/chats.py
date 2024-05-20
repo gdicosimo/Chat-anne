@@ -89,7 +89,7 @@ def get_chats_route():
 
 @chats.route('/messages', methods=['GET'])
 @jwt_required()
-@__get_and_validate_params('id_chat')
+#@__get_and_validate_params('id_chat')
 def get_all_messages_from_chat_route():
     id_chat = request.args.get('id_chat')
     return get_messages_from_chat(id_chat)

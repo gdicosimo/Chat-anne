@@ -60,12 +60,13 @@ const removeFile = (fileName, idx, files, setFiles, setFilesAdded) =>{
     setFiles(newArr);
 }
 
-const handleUploadButton = (files, setFilesAdded, setFiles, setFilesInBox) => {
-    sessionFileStorage.loadFilesToStorage(files)
-    setFilesAdded(false)
-    setFiles(files)
-    setFilesInBox([])
+const handleUploadButton = (setSend, files, setFilesAdded, setFiles, setFilesInBox) => {
+    //sessionFileStorage.loadFilesToStorage(files)
+    //setFilesAdded(false)
+    //setFiles(files)
+    //setFilesInBox([])
     //window.location.reload()
+    setSend(true)
     //repensar esto. Es necesario renderizar el header nuevamente cuando se suben archivos.
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { addDocs, check } from '../../assets'
 import DragDrop from '../DragDrop/DragDrop'
 
-const Emptychat = ({files, setFiles}) => {
+const Emptychat = ({files, setFiles, chatId}) => {
   return (
     <div className='flex flex-col gap-4 w-full py-10'>
         <div className='flex flex-col bg-color-middleblack p-8 items-start border-[1px] border-color-cream rounded-3xl gap-4 hover:cursor-default'>
@@ -30,7 +30,7 @@ const Emptychat = ({files, setFiles}) => {
         {
             //deberia ser un modulo a parte
         }
-        <DragDrop setFiles={setFiles}/>
+        <DragDrop setFiles={setFiles} chatId={chatId}/>
     </div>
   )
 }
