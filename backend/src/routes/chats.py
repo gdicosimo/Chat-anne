@@ -11,11 +11,11 @@ from flask_jwt_extended import jwt_required
 chats = Blueprint('chats', __name__)
 
 
-def __get_and_validate_params(*params, from_request='form'):
+def __get_and_validate_params(*params):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            data = request.form if from_request == 'form' else request.get_json()
+            data = request.get_json()
             missing_params = [param for param in params if param not in data]
             if missing_params:
                 return jsonify({'error': f'No se proporcionaron los siguientes parámetros: {", ".join(missing_params)}'}), 400
@@ -26,7 +26,7 @@ def __get_and_validate_params(*params, from_request='form'):
 
 @chats.route('/', methods=['POST'])
 @jwt_required()
-@__get_and_validate_params('id_chat', from_request='json')
+@__get_and_validate_params('id_chat')
 def create_chat_route():
     chat = request.json.get('id_chat')
     return create_chat(chat)
@@ -34,7 +34,7 @@ def create_chat_route():
 
 @chats.route('/rename-chat', methods=['PUT'])
 @jwt_required()
-@__get_and_validate_params('old_value', 'new_value', from_request='json')
+@__get_and_validate_params('old_value', 'new_value')
 def rename_chat_route():
     old_value = request.json.get('old_value')
     new_value = request.json.get('new_value')
@@ -43,7 +43,7 @@ def rename_chat_route():
 
 @chats.route('/remove-chat', methods=['DELETE'])
 @jwt_required()
-@__get_and_validate_params('id_chat', from_request='json')
+@__get_and_validate_params('id_chat')
 def remove_chat_route():
     chat_name = request.json.get('id_chat')
     return remove_chat(chat_name)
@@ -51,10 +51,9 @@ def remove_chat_route():
 
 @chats.route('/append-pdf', methods=['PUT'])
 @jwt_required()
-@__get_and_validate_params('id_chat', 'pdf_file')
 def append_pdf_route():
     chat_id = request.form.get('id_chat')
-    pdf_file = request.files.get('pdf')
+    pdf_file = request.files.get('pdf_file')
 
     if not pdf_file:
         return jsonify({'error': 'No PDF file provided'}), 400
@@ -66,7 +65,7 @@ def append_pdf_route():
 
 @chats.route('/pop-pdf', methods=['PUT'])
 @jwt_required()
-@__get_and_validate_params('id_chat', 'pdf_name', from_request='json')
+@__get_and_validate_params('id_chat', 'pdf_name')
 def pop_pdf_route():
     id_chat = request.json.get('id_chat')
     pdf_name = request.json.get('pdf_name')
@@ -75,7 +74,7 @@ def pop_pdf_route():
 
 @chats.route('/message', methods=['POST'])
 @jwt_required()
-@__get_and_validate_params('id_chat', 'query', from_request='json')
+@__get_and_validate_params('id_chat', 'query')
 def message_route():
     id_chat = request.json.get('id_chat')
     query = request.json.get('query')
@@ -90,7 +89,7 @@ def get_chats_route():
 
 @chats.route('/messages', methods=['GET'])
 @jwt_required()
-@__get_and_validate_params('id_chat', from_request='json')
+@__get_and_validate_params('id_chat')
 def get_all_messages_from_chat_route():
     id_chat = request.args.get('id_chat')
     return get_messages_from_chat(id_chat)
