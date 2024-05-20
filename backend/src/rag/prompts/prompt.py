@@ -5,6 +5,7 @@ template = """
     Answer based on the context provided.
     context: {context}
     input: {input}
+    chat_history: {chat_history}
     answer:
 """
 
