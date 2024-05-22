@@ -13,30 +13,23 @@ import { OrbitProgress } from 'react-loading-indicators'
 function App() {
   const [open, setButtonOpen] = useState(false);
   const [openHistorial, setOpenHistorial] = useState(false)
-  const [filesLoaded, setFilesLoaded] = useState([])
+  const [filesLoaded, setFilesLoaded] = useState([]) //no se usa
   const [chatId, setChatId] = useState("")
   const [messages, setMessages] = useState(null)
   const [refresh, setRefresh] = useState(false)
   const { id } = useParams()
   const {data, loading, error, fetchdata}  = useFetch()
-  const [sendPdfs, setSendPdfs] = useState(false)
   const [chatName, setChatName] = useState(null)
   const [chatFiles, setChatFiles ] = useState(null)
+  const [newFiles, setNewFiles] = useState(false)
+
   async function fetch(existingChat){
     if (!existingChat){
-      await fetchdata({id_chat: "untitled"}, 'GET_CREATE_CHAT', null) //cuando se cargan los archivos, se manda a crear el chat
+      await fetchdata({id_chat: "untitled chat"}, 'GET_CREATE_CHAT', null) //cuando se cargan los archivos, se manda a crear el chat
     } else {
       await fetchdata(null, 'GET_MSGS', id)
     }
   }
-
-  
-  // useEffect(()=>{
-  //   if (id === '0' && filesLoaded.length > 0){
-  //     fetch(false)
-  //     setSendPdfs(true)
-  //   }
-  // }, [filesLoaded.length])
 
   useEffect(()=>{
     console.log('hola')
@@ -46,17 +39,13 @@ function App() {
       fetch(false)
     }
     console.log('ID CHANGED')
-  }, [id])
+  }, [id, newFiles])
 
   useEffect(()=>{
     if (data) {
       if (id === '0'){
         setChatId(data)
       } else {
-        console.log(data)
-        console.log(data.chat.messages)
-        console.log(data.chat.name)
-        console.log(data.chat._id)
         setMessages(data.chat.messages)
         setChatId(data.chat._id)
         setRefresh(!refresh)
@@ -77,7 +66,7 @@ function App() {
           <title>Chat-anne</title>
           <link rel='icon' type='image/png' href={add} sizes='any'/>
       </Helmet>
-      <Header files={chatFiles} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen} chatId={chatId} chatName={chatName ? chatName :  'untitled chat' }/>
+      <Header newFiles={newFiles} setNewFiles={setNewFiles} files={chatFiles} setFiles={setFilesLoaded} setButtonOpen={setButtonOpen} chatId={chatId} chatName={chatName ? chatName :  'untitled chat' }/>
       {
         open ? 
           <PanelOpciones setButtonOpen={setButtonOpen} setOpenHistorial={setOpenHistorial}/> : (
@@ -92,12 +81,8 @@ function App() {
       }
       <div className='w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
         {id !== '0' && data != null ? (
-          <Chat messages={messages} chatId={chatId}  refresh={refresh} files={filesLoaded} />
-        ) : id === '0' ? (
-          filesLoaded.length === 0 ? (
-            <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>
-          ) : <Chat messages={messages} chatId={chatId} refresh={refresh} files={filesLoaded} sendPdfs={sendPdfs} setSend={setSendPdfs}/>
-        ) : null
+          <Chat messages={messages} chatId={chatId}  refresh={refresh} hasFiles={chatFiles ? true : false}/>
+        ) : <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>
         }
       </div>
       

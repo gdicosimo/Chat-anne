@@ -3,30 +3,12 @@ import useFetch from '../../Hooks/useFetch'
 import Footer from '../Footer'
 import { ThreeDot } from 'react-loading-indicators'
 import { useParams } from 'react-router-dom'
-const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
+const Chat = ({messages, chatId, refresh, hasFiles}) => {
   const [msg, setMsg] = useState(messages)
   const {data, loading, error, fetchdata} = useFetch()
-  const {data: dataPdf, loading: loadingPdf, error: errorPdf, fetchdata: fetchdataPdf}  = useFetch()
   const [mensajeNuevo, setMensajeNuevo] = useState('')
   const messageContainerRef = useRef(null);
 
-  // useEffect(()=>{
-  //   console.log(chatId['id_chat '])
-  //   console.log(messages)
-  //   async function sendFiles(){
-  //     const form = new FormData();
-  //     form.append("pdf_file", files[0]);
-  //     console.log(files[0])
-  //     form.append("id_chat", '664a8f0058832b1c62e9b746');
-  //     const d = Object.fromEntries(form.entries());
-  //     console.log(d);
-  //     await fetchdataPdf(form, 'GET_ADD_DOC', null, true)
-  //   }
-  //   if (sendPdfs){
-  //     sendFiles()
-  //     setSend(false)
-  //   }
-  // },[sendPdfs])
   const { id } = useParams()
   useEffect(()=>{
     async function sendMsg(msg){
@@ -60,14 +42,12 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
     scrollBottom()
   }, [msg, loading, messages])
 
-  // useEffect(()=>{
-  //   console.log(dataPdf)
-  // },[dataPdf])
-
   useEffect(()=>{
     //window.location.reload()
     setMsg(messages)
   },[refresh])
+
+  useEffect(()=>{}, [hasFiles])
 
 
   return (
@@ -86,13 +66,13 @@ const Chat = ({messages, chatId, refresh, files, sendPdfs, setSend}) => {
         {
           loading ? 
           <div className='bot-msg px-4 py-2 items-center'>
-            <ThreeDot variant="bob" color="#FDF0D5" size="small" text={loadingPdf ? 'Uploading files' : null} textColor="" />
+            <ThreeDot variant="bob" color="#FDF0D5" size="small" text={""} textColor="" />
           </div> : null
         }
         
       </div>
       <div className=' bottom-0 w-full max-w-[900px] mt-2'>
-        <Footer setMessages={(msg)=>{setMensajeNuevo(msg)}} />
+        <Footer setMessages={(msg)=>{setMensajeNuevo(msg)}} hasFiles={hasFiles}/>
       </div>
     </div>
   )

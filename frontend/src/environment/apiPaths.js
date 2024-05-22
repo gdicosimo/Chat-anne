@@ -11,15 +11,17 @@ const apiPaths = {
   GET_RENAME: `${environment.hostBackend}${endpoints.RENAME}`,
   GET_ADD_DOC: `${environment.hostBackend}${endpoints.ADD_DOC}`,
   GET_MSGS: `${environment.hostBackend}${endpoints.GET_MSGS}`,
+  GET_DELETE: `${environment.hostBackend}${endpoints.DELETE}`
 };
 
 const endpointMethods = {
   GET_CREATE_CHAT: 'POST',
   GET_SEND_MSG: 'POST',
   GET_LIST_CHATS: 'GET',
-  GET_RENAME: 'POST',
+  GET_RENAME: 'PUT',
   GET_ADD_DOC: 'PUT',
-  GET_MSGS: 'GET'
+  GET_MSGS: 'GET',
+  GET_DELETE: 'DELETE'
 };
 
 export {apiPaths, endpointMethods};

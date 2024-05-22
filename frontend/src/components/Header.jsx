@@ -6,16 +6,13 @@ import Panel from './PanelDesplegado/PanelOpciones'
 import FilesLoaded from './Chats/FilesLoaded'
 import { Link } from 'react-router-dom'
 
-const Header = ({setButtonOpen, files, setFiles, chatId, chatName}) => {
-  
+const Header = ({newFiles, setNewFiles, setButtonOpen, files, setFiles, chatId, chatName}) => {
 
   function openPanel ()  {
     setButtonOpen(true)
   }
 
-  // useEffect(()=>{
-  //   console.log(files)
-  // },[files])
+  useEffect(()=>{}, [chatName])
   return (
     <div className='flex flex-col w-full pclarge:px-[20px] px-[16px] '>
       <div className='py-[20px] flex flex-row justify-between w-full border-b-2 border-color-lightblack items-center'>
@@ -25,7 +22,7 @@ const Header = ({setButtonOpen, files, setFiles, chatId, chatName}) => {
           </div>
           <img onClick={openPanel} src={options} className='btn-animated items-baseline'/>
       </div>
-      <FilesLoaded files={files} setFiles={setFiles}/>
+      <FilesLoaded files={files} chatId={chatId} newFiles={newFiles} setNewFiles={setNewFiles}/>
     </div>
   )
 }

@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { send } from '../assets'
 import { useState } from 'react';
-const Footer = ({setMessages}) => {
+const Footer = ({setMessages, hasFiles}) => {
     // Estado para almacenar el valor del input
   const [inputValue, setInputValue] = useState('');
   
@@ -10,14 +10,18 @@ const Footer = ({setMessages}) => {
     setInputValue(event.target.value);
   };
 
+  useEffect(()=>{}, [hasFiles])
+
   // Función para manejar el envío del formulario (si es necesario)
   const handleSubmit = (event) => {
-    event.preventDefault();
-    // Aquí puedes hacer lo que quieras con el valor del input (por ejemplo, enviarlo a través de una solicitud)
-    console.log('Valor del input:', inputValue);
-    setMessages(inputValue)
-    // Limpia el valor del input después de manejarlo (si es necesario)
-    setInputValue('');
+    if(hasFiles){
+      event.preventDefault();
+      // Aquí puedes hacer lo que quieras con el valor del input (por ejemplo, enviarlo a través de una solicitud)
+      console.log('Valor del input:', inputValue);
+      setMessages(inputValue)
+      // Limpia el valor del input después de manejarlo (si es necesario)
+      setInputValue('');
+    }
   };
   return (
     <div className='w-full border-t-2 border-color-lightblack justify-center flex '>
@@ -25,9 +29,10 @@ const Footer = ({setMessages}) => {
             <input 
               className="font-poppins font-medium text-color-cream placeholder:text-color-cream/50 
               placeholder:font-poppins placeholder:font-medium block bg-color-middleblack hover:bg-color-lightblack transition-all duration-500 w-full  rounded-[100px] py-3 px-4 focus:outline-none" 
-              placeholder="Start asking..." 
+              placeholder={hasFiles ? 'Ask me something' : 'Upload files to start asking'} 
               type="text" 
               name="search"
+              disabled={!hasFiles}
               value={inputValue} // Asigna el valor del input al estado
               onChange={(e)=>{handleInputChange(e)}}
               />
