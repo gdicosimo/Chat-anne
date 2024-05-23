@@ -1,6 +1,19 @@
 const environment = {
-  production: false,
-  hostBackend: 'http://localhost:5000',
+  
+  "development" : {  
+    production: false,
+    hostBackend: 'http://localhost:5000'
+  },
+
+    
+  "production" : {  
+    production: true,
+    hostBackend: '/api'
+  },
+
 };
 
-export default environment;
+
+console.log(environment[process.env.NODE_ENV])
+
+export default environment[process.env.NODE_ENV];

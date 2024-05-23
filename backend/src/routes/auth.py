@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 
-from controllers.auth_controller import registerUser, login
+from src.controllers.auth_controller import registerUser, login
 
 auth = Blueprint('auth', __name__)
 

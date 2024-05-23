@@ -7,9 +7,9 @@ from bson import ObjectId
 from flask import current_app, jsonify
 from flask_jwt_extended import get_jwt_identity
 
-from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
+from src.db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
-from controllers.langchain_controller import Langchain
+from src.controllers.langchain_controller import Langchain
 
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'
@@ -78,10 +78,11 @@ def create_chat(chat_name):
 
 def rename_chat(id_chat, new_value):
     try:
-        if not search_db(MODEL_CHAT,{'_id': ObjectId(id_chat)}):
+        if not search_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}):
             return jsonify({'message': 'El chat no existe'}), 400
 
-        isUpdated = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {'$set': {'name': new_value}})
+        isUpdated = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {
+                                  '$set': {'name': new_value}})
 
         return jsonify({'message': f'El chat {id_chat} se cambio a {new_value} correctamente!'}), 200
     except Exception as e:
@@ -90,7 +91,7 @@ def rename_chat(id_chat, new_value):
 
 def remove_chat(chat_name):
     try:
-        isRemoved = delete_one_db(MODEL_CHAT,{'_id': ObjectId(chat_name)})
+        isRemoved = delete_one_db(MODEL_CHAT, {'_id': ObjectId(chat_name)})
         print(isRemoved)
         Langchain.delete_chat_if_exists(chat_name)
 
@@ -192,12 +193,3 @@ def get_messages_from_chat(id_chat):
         return jsonify({'chat': chat[0]}), 200
     except Exception as e:
         return jsonify({'err': str(e)}), 400
-
-
-# This controller is only for testing
-def list_chats():
-    try:
-        collections = Langchain.list_chats()
-        return jsonify(collections), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500

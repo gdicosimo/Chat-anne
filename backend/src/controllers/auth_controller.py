@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import bcrypt
 from flask import jsonify, request, Blueprint, make_response
-from db.mongodb.mongo import search_db, insert_db
+from src.db.mongodb.mongo import search_db, insert_db
 from flask_jwt_extended import create_access_token
 
 # Constants
@@ -15,7 +15,6 @@ main = Blueprint('auth_blueprint', __name__)
 
 
 def getAllUsers():
-    # curl -X GET http://localhost:5000/auth/all -H "Accept: application/json"
     try:
         elements = search_db(MODEL_USER)
         return jsonify(elements), 200
@@ -24,12 +23,6 @@ def getAllUsers():
 
 
 def registerUser(username, pwd):
-    '''
-        curl -X POST http://localhost:5000/auth/register \
-        -H "Content-Type: application/json" \
-        -d '{"username": "usr", "pwd": "pwd"}'
-
-    '''
     try:
         if search_db(MODEL_USER, {'username': username}):
             return jsonify({'error': 'El email ya existe'}), 400
@@ -44,12 +37,6 @@ def registerUser(username, pwd):
 
 
 def login(username, pwd):
-    '''
-        curl -X POST http://localhost:5000/auth/login \
-        -H "Content-Type: application/json" \
-        -d '{"username": "usr", "pwd": "pwd"}'
-    '''
-
     try:
 
         list = search_db(MODEL_USER, {'username': username})

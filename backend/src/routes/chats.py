@@ -1,9 +1,9 @@
 from functools import wraps
 from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import NotFound
-from controllers.chats_controller import (
+from src.controllers.chats_controller import (
     get_chats, create_chat, rename_chat as rename_chat_controller,
-    answer_and_save_message, remove_chat, append_pdf, pop_pdf, list_chats,
+    answer_and_save_message, remove_chat, append_pdf, pop_pdf,
     get_messages_from_chat
 )
 from flask_jwt_extended import jwt_required
@@ -94,10 +94,6 @@ def get_all_messages_from_chat_route():
     id_chat = request.args.get('id_chat')
     return get_messages_from_chat(id_chat)
 
-
-@chats.route('/list', methods=['GET'])
-def list_chats_route():
-    return list_chats()
 
 
 @chats.errorhandler(404)

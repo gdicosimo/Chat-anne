@@ -3,6 +3,7 @@ Flask-cors
 pymongo
 flask-bcrypt
 Flask-JWT-Extended
+waitress
 
 langchain
 langchain_community
