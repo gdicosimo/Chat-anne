@@ -13,7 +13,6 @@ from rag.model.google_generativeai import GoogleGenerativeAI
 from rag.data_processing.processing import processing
 from rag.prompts.prompt import prompt
 
-
 class Langchain:
 
     @staticmethod

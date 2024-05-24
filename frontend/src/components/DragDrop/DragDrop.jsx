@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import DragDropLogic from './DragDropLogic';
 import { trash } from '../../assets';
 import { ThreeDot } from 'react-loading-indicators';
+import {apiPaths} from '../../environment/apiPaths';
 
 const DragDrop = ({ setFiles, chatId }) => {
     const [dragActive, setDragActive] = useState(false); // track when a file has entered or exited the dropzone
@@ -19,8 +20,8 @@ const DragDrop = ({ setFiles, chatId }) => {
         formData.append('pdf_file', filesInBox[0]);
         console.log(Object.fromEntries(formData));
         try {
-            setLoading(true);
-            const response = await fetch('http://localhost:5000/chats/append-pdf', {
+            setLoading(true)
+            const response = await fetch(apiPaths["GET_ADD_DOC"], {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData,
