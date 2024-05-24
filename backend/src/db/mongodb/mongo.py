@@ -1,5 +1,5 @@
 from pymongo import MongoClient, ReturnDocument
-from src.db.mongodb.schema import SCHEMA
+from db.mongodb.schema import SCHEMA
 
 # Constants
 DB_NAME = 'chatanne'

@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import bcrypt
 from flask import jsonify, request, Blueprint, make_response
-from src.db.mongodb.mongo import search_db, insert_db
+from db.mongodb.mongo import search_db, insert_db
 from flask_jwt_extended import create_access_token
 
 # Constants

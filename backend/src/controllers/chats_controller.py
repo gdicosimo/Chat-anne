@@ -7,9 +7,9 @@ from bson import ObjectId
 from flask import current_app, jsonify
 from flask_jwt_extended import get_jwt_identity
 
-from src.db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
+from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
-from src.controllers.langchain_controller import Langchain
+from controllers.langchain_controller import Langchain
 
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'

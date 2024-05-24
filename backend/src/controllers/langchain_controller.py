@@ -1,7 +1,7 @@
 import uuid
 
 from langchain_community.vectorstores import Chroma
-from src.db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
+from db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
 
 
 from langchain.docstore.document import Document
@@ -9,9 +9,9 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 
 
-from src.rag.model.google_generativeai import GoogleGenerativeAI
-from src.rag.data_processing.processing import processing
-from src.rag.prompts.prompt import prompt
+from rag.model.google_generativeai import GoogleGenerativeAI
+from rag.data_processing.processing import processing
+from rag.prompts.prompt import prompt
 
 class Langchain:
 

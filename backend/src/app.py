@@ -5,12 +5,13 @@ from flask_jwt_extended import jwt_required, JWTManager
 
 def create_app():
     app = Flask(__name__)
-
+    
+    """
     @app.route("/", methods=['GET'])
     def index():
         data = {"message": "Hello World!!"}
         return jsonify(data), 200
-
+    """
 
     @app.route("/am-i-authenticated", methods=['GET'])
     @jwt_required()
@@ -19,8 +20,8 @@ def create_app():
 
 
     def register_blueprints(app):
-        from src.routes.auth import auth
-        from src.routes.chats import chats
+        from routes.auth import auth
+        from routes.chats import chats
         
         app.register_blueprint(auth, url_prefix='/auth')
         app.register_blueprint(chats, url_prefix='/chats')
@@ -48,5 +49,6 @@ def create_app():
     return app
 
 if __name__ == '__main__':
+    
     app = create_app()
     app.run(host='0.0.0.0', port=5000, debug=True)

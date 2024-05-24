@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import NotFound
-from src.controllers.chats_controller import (
+from controllers.chats_controller import (
     get_chats, create_chat, rename_chat as rename_chat_controller,
     answer_and_save_message, remove_chat, append_pdf, pop_pdf,
     get_messages_from_chat
