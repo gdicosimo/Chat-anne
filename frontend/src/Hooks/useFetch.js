@@ -30,7 +30,8 @@ const useFetch = () => {
             setData(await response.json());
             //console.log(data)
         } else {
-            setError('Error al realizar la solicitud');
+            console.log(response)
+            setError(response);
         }
         } catch (error) {
             console.error('Error:', error);

@@ -1,29 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import { cross } from '../../assets'
-
+import useFetch from '../../Hooks/useFetch'
+import { ThreeDot } from 'react-loading-indicators'
 const Chatname = ({chatId, name}) => {
     
-    const [chatName, setChatName] = useState("")
+    const [chatName, setChatName] = useState(name)
     const [showEditor, setShowEditor] = useState(false)
+    const {data, loading, error, fetchdata} = useFetch()
 
     const handleInputChange = (event) => {
       setChatName(event.target.value)
     }
 
-    const updateName = () => {
+    useEffect(()=>{
+      setChatName(name)
+    }, [chatId, name])
+
+    const updateName = async () => {
       //API Post mandando ID de chat y nuevo nombre
       console.log(chatId)
-      if (chatName){
-          
+      if (chatName != ""){
+          fetchdata({id_chat: chatId, new_value: chatName}, 'GET_RENAME', null)
+            .then(()=>{
+              setShowEditor(false)
+            })
       }
-      setShowEditor(false)
+      
     }
     return (
       <div className='flex flex-col'>
         <div 
           onClick={()=>{setShowEditor(!showEditor)}}
           className='flex px-[10px] py-[5px] bg-color-lightblack rounded-lg btn-animated '>
-            <h3 className='whitespace-nowrap overflow-clip overflow-ellipsis'>{name}</h3>
+            <h3 className='whitespace-nowrap overflow-clip overflow-ellipsis'>{chatName}</h3>
         </div>
         {
           showEditor ? (
@@ -46,7 +55,9 @@ const Chatname = ({chatId, name}) => {
                 <button 
                   onClick={()=>{updateName()}}
                   className='flex-1 btn-animated bg-color-cream p-2 rounded-md font-poppins font-semibold'>
-                    Save
+                        {
+                            loading ? <ThreeDot variant="pulsate" color="#1E1E1E" size="small" text="" textColor="" /> : 'Save'
+                        }
                 </button>
                 <button 
                   onClick={()=>{setShowEditor(false); setChatName(name)}}
