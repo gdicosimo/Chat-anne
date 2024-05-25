@@ -6,13 +6,6 @@ from flask_jwt_extended import jwt_required, JWTManager
 def create_app():
     app = Flask(__name__)
     
-    """
-    @app.route("/", methods=['GET'])
-    def index():
-        data = {"message": "Hello World!!"}
-        return jsonify(data), 200
-    """
-
     @app.route("/am-i-authenticated", methods=['GET'])
     @jwt_required()
     def index_authenticated():
@@ -48,7 +41,14 @@ def create_app():
     
     return app
 
+def append_index(app):
+    @app.route("/", methods=['GET'])
+    def index():
+        data = {"message": "Hello from api!!"}
+        return jsonify(data), 200
+        
 if __name__ == '__main__':
-    
     app = create_app()
+    append_index(app)
+
     app.run(host='0.0.0.0', port=5000, debug=True)
