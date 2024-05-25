@@ -15,7 +15,6 @@ main = Blueprint('auth_blueprint', __name__)
 
 
 def getAllUsers():
-    # curl -X GET http://localhost:5000/auth/all -H "Accept: application/json"
     try:
         elements = search_db(MODEL_USER)
         return jsonify(elements), 200
@@ -29,7 +28,8 @@ def registerUser(username, pwd):
             return jsonify({'error': 'El email ya existe'}), 400
         hashed_password_bytes = bcrypt.hashpw(pwd.encode(), salt)
         hashed_password_str = hashed_password_bytes.decode('utf-8')
-        id_user = insert_db(MODEL_USER, {"username": username, "pwd": hashed_password_str})
+        id_user = insert_db(
+            MODEL_USER, {"username": username, "pwd": hashed_password_str})
         return {'message': username + ' registrado correctamente'}, 200
     except Exception as e:
         print(e)
@@ -44,9 +44,11 @@ def login(username, pwd):
         hashed_password_bytes = user['pwd'].encode('utf-8')
 
         if user and bcrypt.checkpw(pwd.encode(), hashed_password_bytes):
-            access_token = create_access_token(identity=user['username'], expires_delta=timedelta(hours=5))
+            access_token = create_access_token(
+                identity=user['username'], expires_delta=timedelta(hours=5))
             response = make_response({"message": "login Success"})
-            response.set_cookie('access_token_cookie', access_token, httponly=True, samesite='None', secure=True)
+            response.set_cookie('access_token_cookie', access_token,
+                                httponly=True, samesite='None', secure=True)
             return response
         else:
             return jsonify({'message': 'Login Failed'}), 401

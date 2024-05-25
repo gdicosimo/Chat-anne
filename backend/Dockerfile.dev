@@ -5,11 +5,10 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt /usr/src/app/
 
-# Install dependencies
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
-CMD ["python", "src/app.py"]
+CMD python src/app.py 
 

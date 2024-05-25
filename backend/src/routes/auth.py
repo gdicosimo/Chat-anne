@@ -4,14 +4,11 @@ from controllers.auth_controller import registerUser, login
 
 auth = Blueprint('auth', __name__)
 
-
+"""
 @auth.route('/', methods=['GET'])
 def index():
     data = {"message": "Hello desde auth"}
     return jsonify(data), 200
-
-
-"""
 
 
 @auth.route('/all', methods=['GET'])

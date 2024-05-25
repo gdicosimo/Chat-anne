@@ -10,12 +10,17 @@ SCHEMA = {
         'owner': str,
         'name': str,
         'created_at': datetime,
+        'pdfs': [
+            {
+                'name': str
+            }
+        ],
+
         'messages': [
             {
-                'from': str,  #este no se si es necestario dado que ya está en la conversacion
-                'message': str,
-                'timestamp': datetime,
-
+                'answer': str,
+                'query': str,
+                'timestamp': datetime
             }
 
         ]

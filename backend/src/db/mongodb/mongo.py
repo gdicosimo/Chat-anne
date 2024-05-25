@@ -10,7 +10,6 @@ DB_URL = f'mongodb://{DB_HOST}:27017/{DB_NAME}?authSource=admin'
 def connect_db():
     try:
         client = MongoClient(DB_URL)
-        print('Conexión exitosa a la base de datos')
         return client[DB_NAME]
     except Exception as e:
         raise e
@@ -33,6 +32,16 @@ def search_db(model, query={},showColumns={}):
             doc['_id'] = str(doc['_id'])
             result.append(doc)
             
+        return result
+    except Exception as e:
+        raise e
+
+
+def delete_one_db(model, query={}):
+    try:
+        db = connect_db()
+        collection = connect_model(db, model)
+        result = collection.delete_one(query)
         return result
     except Exception as e:
         raise e

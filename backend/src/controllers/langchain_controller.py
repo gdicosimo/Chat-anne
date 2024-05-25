@@ -1,54 +1,121 @@
-import os
-from flask import jsonify, request, current_app
+import uuid
 
-from langChain.app import LangChain
-
-
-def get_index():
-    data = {"message": "Hello desde Langchain!!"}
-    return jsonify(data), 200
+from langchain_community.vectorstores import Chroma
+from db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
 
 
-def create_or_add_to_collection(request):
-    # curl -X POST -F "pdf=@/home/user/Downloads/Modulo_3.pdf" -F "collection=gonza" http://localhost:5000/langchain/upload-pdf
+from langchain.docstore.document import Document
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
+from langchain.memory import ConversationBufferMemory
 
-    try:
-        if 'pdf' not in request.files:
-            return jsonify({'error': 'No se proporciono ningun archivo PDF'}), 400
+from rag.model.google_generativeai import GoogleGenerativeAI
+from rag.data_processing.processing import processing
+from rag.prompts.prompt import prompt
 
-        pdf_file = request.files['pdf']
-        collection = request.form.get('collection')
+class Langchain:
 
-        if not pdf_file.filename.endswith('.pdf'):
-            return jsonify({'error': 'El archivo proporcionado no es un PDF valido'}), 400
+    @staticmethod
+    def __get_chroma_client(collection_name: str) -> Chroma:
+        embedding_function = GoogleGenerativeAI.get_embedding_function()
+        return Chroma(
+            client=connect_db(),
+            collection_name=collection_name,
+            embedding_function=embedding_function
+        )
 
-        # Save the uploaded PDF file to a temporary location
-        temp_pdf_path = os.path.join(
-            current_app.config['UPLOAD_FOLDER'], pdf_file.filename)
-        pdf_file.save(temp_pdf_path)
+    @staticmethod
+    def create_chat(chat: str):
+        try:
+            create(chat)
+        except Exception as e:
+            raise e
 
-        LangChain.create_or_add(temp_pdf_path, collection)
+    @staticmethod
+    def delete_chat_if_exists(chat: str):
+        try:
+            delete(chat)
+        except Exception as e:
+            raise e
 
-        return jsonify({'message': f'El archivo {pdf_file.filename} se agrego a la coleccion exitosamente'}), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
-    finally:
-        if os.path.exists(temp_pdf_path):
-            os.remove(temp_pdf_path)
+    @staticmethod
+    def append_pdf_if_exists(chat: str, pdf: object, pdf_name: str):
+        try:
+            chat_client = Langchain.__get_chroma_client(chat)
 
+            docs = processing(pdf)
 
-def answer(request):
-    # curl -X POST -H "Content-Type: application/json" -d '{"query": "Que es una derivada?", "collection" : "gonza"}' http://localhost:5000/langchain/query
-    try:
-        data = request.json
+            if exists_pdf_in(chat, pdf_name):
+                raise ValueError(
+                    f"Ya se agrego '{pdf_name}' al chat '{chat}'."
+                )
 
-        query = data.get('query')
-        collection = data.get('collection')
-        if not query or not collection:
-            return jsonify({'error': 'Los datos de consulta son obligatorios y deben incluir "query" y "collection"'}), 400
+            new_docs = []
+            ids_docs = []
+            for doc in docs:
+                new_doc = Document(
+                    page_content=doc.page_content,
+                    metadata={
+                        'page': doc.metadata.get('page'),
+                        'pdf': pdf_name
+                    }
+                )
+                new_docs.append(new_doc)
+                ids_docs.append(str(uuid.uuid1()))
 
-        response = LangChain.response(query, collection)
+            chat_client.add_documents(
+                documents=new_docs,
+                ids=ids_docs
+            )
 
-        return jsonify(response), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+        except Exception as e:
+            raise e
+
+    @ staticmethod
+    def pop_pdf_if_exists(chat: str, pdf: str):
+        try:
+            pop_pdf_in(chat, pdf)
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def response(query: str, chat: str,history_chat) -> str:
+        try:
+
+            if is_empty(chat):
+                raise ValueError(
+                    f"El chat '{chat}' no contiene pdfs."
+                )
+
+            vectorstore = Langchain.__get_chroma_client(chat)
+
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+            
+            memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+            if 'messages' in history_chat[0]:
+                for entry in history_chat[0]['messages']:
+                    memory.save_context({"input": entry['query']}, {"output": entry['answer']})
+
+            llm = GoogleGenerativeAI.get_llm()
+
+            combine_docs_chain = create_stuff_documents_chain(llm,prompt)
+            retrieval_chain = create_retrieval_chain(
+                retriever, combine_docs_chain)
+
+            query = {"input": query}
+            query["chat_history"] = memory
+
+            response = retrieval_chain.invoke(query)
+
+            return response["answer"]
+        except Exception as e:
+            raise e
+
+    # This function is only for testing
+    @ staticmethod
+    def list_chats():
+        try:
+            return list()
+        except Exception as e:
+            raise e

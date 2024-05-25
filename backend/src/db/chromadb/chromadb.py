@@ -1,8 +1,6 @@
 import chromadb
 from chromadb.config import Settings
-import uuid
 
-from langChain.model.google_generativeai import GoogleGenerativeAI
 
 # Constants
 DB_HOST = 'chromadb'
@@ -22,31 +20,73 @@ def connect_db():
         raise e
 
 
-def get_or_create_collection(collection_name):
+def create(collection_name):
     try:
         client = connect_db()
-        google_ef = GoogleGenerativeAI.get_chroma_embedding_function()
-        collection = client.get_or_create_collection(
-            name=collection_name, embedding_function=google_ef)
-        return collection
+        client.create_collection(name=collection_name)
     except Exception as e:
         raise e
 
 
-def add_to_collection(collection_name, docs):
+def rename(collection_name, new_collection_name):
     try:
-        collection = get_or_create_collection(collection_name)
-        for doc in docs:
-            collection.add(
-                ids=[str(uuid.uuid1())], metadatas=doc.metadata, documents=doc.page_content
-            )
+        collection = get_collection(collection_name)
+        collection.modify(name=new_collection_name)
     except Exception as e:
         raise e
 
 
-def list_all_collections():
+def delete(collection_name):
     try:
         client = connect_db()
-        return client.list_collections()
+        client.delete_collection(name=collection_name)
+    except Exception as e:
+        raise e
+
+
+def get_collection(collection_name):
+    try:
+        client = connect_db()
+        return client.get_collection(name=collection_name)
+    except Exception as e:
+        raise e
+
+
+def exists(collection_name):
+    try:
+        return collection_name in list()
+    except Exception as e:
+        raise e
+
+
+def exists_pdf_in(collection_name, pdf):
+    try:
+        collection = get_collection(collection_name)
+        documents = collection.get(where={"pdf": pdf})
+        return len(documents['documents']) > 0
+    except Exception as e:
+        raise e
+
+
+def pop_pdf_in(collection_name, pdf):
+    try:
+        collection = get_collection(collection_name)
+        collection.delete(where={"pdf": pdf})
+    except Exception as e:
+        raise e
+
+
+def is_empty(collection_name):
+    try:
+        collection = get_collection(collection_name)
+        return collection.count() == 0
+    except Exception as e:
+        raise e
+
+
+def list():
+    try:
+        client = connect_db()
+        return [collection.name for collection in client.list_collections()]
     except Exception as e:
         raise e
