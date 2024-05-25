@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useState,useEffect, useContext } from 'react';
 import { send } from '../assets'
-import { useState } from 'react';
+import LoadingAnswerContext from './Chats/LoadingAnswer';
+
 const Footer = ({setMessages, hasFiles}) => {
     // Estado para almacenar el valor del input
   const [inputValue, setInputValue] = useState('');
-  
+  const LoadingAnswer = useContext(LoadingAnswerContext);
+
   // Función para manejar el cambio en el input
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -23,6 +25,7 @@ const Footer = ({setMessages, hasFiles}) => {
       setInputValue('');
     }
   };
+
   return (
     <div className='w-full border-t-2 border-color-lightblack justify-center flex '>
         <div className='w-full max-w-[900px] flex flex-row px-5 py-8 gap-4 '>
@@ -32,9 +35,14 @@ const Footer = ({setMessages, hasFiles}) => {
               placeholder={hasFiles ? 'Ask me something' : 'Upload files to start asking'} 
               type="text" 
               name="search"
-              disabled={!hasFiles}
+              disabled={!hasFiles || LoadingAnswer}
               value={inputValue} // Asigna el valor del input al estado
               onChange={(e)=>{handleInputChange(e)}}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSubmit(e);
+                }
+              }}
               />
             <img src={send} className='btn-animated' onClick={(e)=>{handleSubmit(e)}}/>
         </div>
