@@ -22,6 +22,9 @@ project/
 
 ## Requisitos
 
+Previo a utilizar la aplicación, se requerirá una API key de Gemini para utilizar el modelo ya entrenado por Google. Se puede obtener fácilmente a través de Google AI Studio, utilizando el siguiente enlace:
+> https://aistudio.google.com/app/u/0/apikey
+
 - Docker: [Instalación de Docker](https://docs.docker.com/get-docker/)
 - Docker Compose: [Instalación de Docker Compose](https://docs.docker.com/compose/install/)
 
