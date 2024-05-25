@@ -97,7 +97,7 @@ def remove_chat(chat_name):
 
         return jsonify({'message': f'El chat {chat_name} se eliminó correctamente!'}), 200
     except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 400
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
 def append_pdf(chat_id, pdf_file):
@@ -151,7 +151,7 @@ def answer_and_save_message(id_chat, query):
         })
 
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
         # chat = __generate_chat_name(id_chat)
         response = Langchain.response(query, id_chat)
@@ -188,7 +188,7 @@ def get_messages_from_chat(id_chat):
             'owner': get_jwt_identity()
         })
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
         return jsonify({'chat': chat[0]}), 200
     except Exception as e:
