@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { cross } from '../../assets'
 import { ThreeDot } from 'react-loading-indicators'
 import useFetch from '../../Hooks/useFetch'
+import { apiPaths } from '../../environment/apiPaths';
+
 const AddFilesWindow = ({cerrarVentana, chatId, files}) => {
     //Hacer fetch para enviar los archivos nuevos
     //Corregir muestreo de ventana DONE
@@ -20,7 +22,7 @@ const AddFilesWindow = ({cerrarVentana, chatId, files}) => {
       console.log(Object.fromEntries(formData))
       try {
           setLoading(true)
-          const response = await fetch('http://localhost:5000/chats/append-pdf', {
+          const response = await fetch(apiPaths["GET_ADD_DOC"], {
               method: 'PUT',
               credentials: 'include',
               body: formData,
