@@ -3,96 +3,137 @@
 ROOT_DIR=$(pwd)
 
 get_api_key() {
-    read -p "Inserta tu API Key: " api_key
+    ENV_FILE="${ROOT_DIR}/backend/src/rag/model/.env"
+    if [[ -f "$ENV_FILE" ]]; then
+        existing_api_key=$(grep -oP 'GOOGLE_API_KEY=\K.*' "$ENV_FILE")
+        if [[ -n "$existing_api_key" ]]; then
+            echo "Ya existe una API key."
+            read -p "¿Quieres usar la API Key existente? (y/n): " use_existing
+            if [[ "$use_existing" =~ ^[Yy]$ ]]; then
+                echo "Usando la API Key existente."
+                return
+            fi
+        fi
+    fi
+
+    read -p "Inserta la API Key de Google Gemini: " api_key
 
     if [[ -z "$api_key" ]]; then
         echo "No has ingresado ninguna API Key!"
         echo "No podrás ejecutar el backend sin una API Key válida."
     else
-
         if [[ "$api_key" =~ [[:space:]] ]]; then
             echo "La API Key no puede contener espacios en blanco!"
             echo "No podrás ejecutar el backend sin una API Key válida."
         else
-
-            echo "GOOGLE_API_KEY=$api_key" > "${ROOT_DIR}/backend/src/langChain/model/".env
+            echo "GOOGLE_API_KEY=$api_key" > "$ENV_FILE"
             echo "Se ha creado el archivo .env con la API Key."
         fi
     fi
 }
 
 
-# Function to install Python dependencies
 install_pip_dependencies() {
     local project_directory=$1
-    # Check if a virtual environment already exists
     if [ ! -d "$project_directory/venv" ]; then
-        echo "Creating virtual environment at $project_directory..."
+        echo "Creando entorno virtual en $project_directory..."
         cd "$project_directory" || exit
         python3 -m venv venv || py -m venv venv
 
-        # Activate the virtual environment and install backend dependencies
         source venv/bin/activate || . venv/Scripts/activate
         pip install --upgrade pip
-        pip install -r requirements.txt || { echo "Failed to install Python dependencies for $project_directory"; exit 1; }
+        pip install -r requirements.txt || { echo "Fallo al instalar dependencias de Python para $project_directory"; exit 1; }
 
-        # Deactivate the virtual environment
-        deactivate || { echo "Failed to deactivate virtual environment for $project_directory"; exit 1; }
+        deactivate || { echo "Fallo al desactivar el entorno virtual para $project_directory"; exit 1; }
         cd "$ROOT_DIR" || exit
-        echo "Python dependencies installed for $project_directory."
+        echo "Dependencias de Python instaladas para $project_directory."
     else
-        echo "$project_directory: virtual environment already exists."
+        echo "El entorno virtual ya existe en $project_directory."
     fi
 }
 
-# Function to install Node.js dependencies
 install_node_dependencies() {
     local project_directory=$1
-    # Check if node_modules already exist
     if [ ! -d "$project_directory/node_modules" ]; then
-        # Install dependencies
-        echo "Installing dependencies for $project_directory..."
+        echo "Instalando dependencias para $project_directory..."
         cd "$project_directory" || exit
-        npm install || { echo "Failed to install Node.js dependencies for $project_directory"; exit 1; }
+        npm install || { echo "Fallo al instalar dependencias de Node.js para $project_directory"; exit 1; }
         cd "$ROOT_DIR" || exit
-        echo "Dependencies installed for $project_directory."
+        echo "Dependencias instaladas para $project_directory."
     else
-        echo "$project_directory: dependencies already exist."
+        echo "Las dependencias ya existen en $project_directory."
     fi
 }
 
-# Check if Python command is available
-if command -v python3 &> /dev/null || command -v py &> /dev/null ; then
-    echo "Python found."
-    # Check if backend directory exists
-    if [ -d "backend" ]; then
-        # Install backend dependencies
-        install_pip_dependencies "backend"
+show_spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep -w $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+
+run_docker() {
+    local mode=$1
+    if [ "$mode" == "dev" ]; then
+        docker compose -f compose-dev.yml up --build -d &> /dev/null &
+        show_spinner $!
+        echo "El proyecto está corriendo en modo desarrollo. Backend (Flask): http://localhost:5000, Frontend (Vite): http://localhost:4200"
+    elif [ "$mode" == "prod" ]; then
+        docker compose -f compose.yml up --build -d &> /dev/null &
+        show_spinner $!
+        echo "El proyecto está corriendo en modo producción en http://localhost/"
     else
-        echo "Error: 'backend' directory not found."
+        echo "Modo no válido seleccionado."
+    fi
+}
+
+read -p "¿Quieres instalar las dependencias del proyecto localmente? (y/n): " install_local
+
+if [[ "$install_local" =~ ^[Yy]$ ]]; then
+    # Check if Python command is available
+    if command -v python3 &> /dev/null || command -v py &> /dev/null ; then
+        echo "Python encontrado."
+        if [ -d "backend" ]; then
+            install_pip_dependencies "backend"
+        else
+            echo "Error: directorio 'backend' no encontrado."
+        fi
+    else
+        echo "Python no encontrado. Saliendo."
+        exit 1
+    fi
+
+    # Check if npm command is available
+    if command -v npm &> /dev/null; then
+        echo "npm encontrado."
+        if [ -d "frontend" ]; then
+            install_node_dependencies "frontend"
+        else
+            echo "Error: directorio 'frontend' no encontrado."
+        fi
+    else
+        echo "npm no encontrado. Por favor, instala Node.js y npm para continuar."
+        exit 1
     fi
 else
-    echo "Python not found. Exiting."
-    exit 1
-fi
-
-# Check if npm command is available
-if command -v npm &> /dev/null; then
-    echo "npm found."
-    # Check if frontend directory exists
-    if [ -d "frontend" ]; then
-        # Install frontend dependencies
-        install_node_dependencies "frontend"
-    else
-        echo "Error: 'frontend' directory not found."
-    fi
-
-else
-    echo "npm not found. Please install Node.js and npm to continue."
-    exit 1
+    echo "No se instalarán las dependencias localmente."
 fi
 
 get_api_key
 
-read -rp "Press Enter to exit..." input
+read -p "¿Quieres ejecutar el proyecto? (y/n): " run_project
+if [[ "$run_project" =~ ^[Yy]$ ]]; then
+    read -p "¿En qué modo quieres ejecutar el proyecto? (dev/prod): " mode
+    run_docker "$mode"
+fi
+
+read -rp "Presiona Enter para salir..." input
 

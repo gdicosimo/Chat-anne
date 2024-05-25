@@ -66,7 +66,7 @@ def create_chat(chat_name):
         id_chat = insert_db(MODEL_CHAT, {
             'owner': get_jwt_identity(),
             'created_at': datetime.now(),
-            'name': chat_name
+            'name': str(chat_name)
         })
 
         Langchain.create_chat(str(id_chat))
@@ -78,10 +78,11 @@ def create_chat(chat_name):
 
 def rename_chat(id_chat, new_value):
     try:
-        if not search_db(MODEL_CHAT,{'_id': ObjectId(id_chat)}):
+        if not search_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}):
             return jsonify({'message': 'El chat no existe'}), 400
 
-        isUpdated = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {'$set': {'name': new_value}})
+        isUpdated = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)}, {
+                                  '$set': {'name': new_value}})
 
         return jsonify({'message': f'El chat {id_chat} se cambio a {new_value} correctamente!'}), 200
     except Exception as e:
@@ -90,19 +91,18 @@ def rename_chat(id_chat, new_value):
 
 def remove_chat(chat_name):
     try:
-        isRemoved = delete_one_db(MODEL_CHAT,{'_id': ObjectId(chat_name)})
+        isRemoved = delete_one_db(MODEL_CHAT, {'_id': ObjectId(chat_name)})
         print(isRemoved)
         Langchain.delete_chat_if_exists(chat_name)
 
         return jsonify({'message': f'El chat {chat_name} se eliminó correctamente!'}), 200
     except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 400
+        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
 def append_pdf(chat_id, pdf_file):
     try:
         temp_pdf_path = None
-
         pdf_name = pdf_file.filename[:-4]  # quito la extension .pdf
 
         chat = search_db(MODEL_CHAT, {
@@ -153,7 +153,7 @@ def answer_and_save_message(id_chat, query):
         print(chat)
 
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
         #chat = __generate_chat_name(id_chat)
         response = Langchain.response(query, id_chat,chat)
@@ -192,17 +192,8 @@ def get_messages_from_chat(id_chat):
             'owner': get_jwt_identity()
         })
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 200
+            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
         return jsonify({'chat': chat[0]}), 200
     except Exception as e:
         return jsonify({'err': str(e)}), 400
-
-
-# This controller is only for testing
-def list_chats():
-    try:
-        collections = Langchain.list_chats()
-        return jsonify(collections), 200
-    except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500

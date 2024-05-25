@@ -10,7 +10,6 @@ DB_URL = f'mongodb://{DB_HOST}:27017/{DB_NAME}?authSource=admin'
 def connect_db():
     try:
         client = MongoClient(DB_URL)
-        print('Conexión exitosa a la base de datos')
         return client[DB_NAME]
     except Exception as e:
         raise e
