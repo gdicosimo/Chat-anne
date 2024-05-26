@@ -13,7 +13,7 @@ const FileContainer = ({file, refetch, chatId}) => {
           <img src={cross} className='h-4' onClick={()=>{setConfirmRm(true)}}/>
       </div>
       {
-        true ? (
+        confirmRm ? (
           <RemoveFile chatId={chatId} fileToRemove={file} closeWindow={()=>{setConfirmRm(false); refetch()}}/>
         ): null
       }
