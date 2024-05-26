@@ -5,9 +5,7 @@ import useFetch from '../../Hooks/useFetch'
 import { apiPaths } from '../../environment/apiPaths';
 
 const AddFilesWindow = ({cerrarVentana, chatId, files}) => {
-    //Hacer fetch para enviar los archivos nuevos
-    //Corregir muestreo de ventana DONE
-    //Que no se puedan clickear otras cosas cuando esta el cartel DONE ?
+
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     useEffect(()=>{

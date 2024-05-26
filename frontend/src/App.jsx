@@ -20,7 +20,7 @@ function App() {
   const { id } = useParams()
   const {data, loading, error, fetchdata}  = useFetch()
   const [chatName, setChatName] = useState(null)
-  const [chatFiles, setChatFiles ] = useState(null)
+  const [chatFiles, setChatFiles ] = useState([])
   const [newFiles, setNewFiles] = useState(false)
 
   async function fetch(existingChat){
@@ -35,6 +35,7 @@ function App() {
     console.log('hola')
     if (id != '0'){
       fetch(true)
+      console.log("Refetch")
     } else {
       fetch(false)
     }
@@ -43,6 +44,7 @@ function App() {
 
   useEffect(()=>{
     if (data) {
+      console.log(data)
       if (id === '0'){
         setChatId(data)
       } else {
@@ -81,7 +83,7 @@ function App() {
       }
       <div className='w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
         {id !== '0' && data != null ? (
-          <Chat messages={messages} chatId={chatId}  refresh={refresh} hasFiles={chatFiles ? true : false}/>
+          <Chat messages={messages} chatId={chatId}  refresh={refresh} hasFiles={chatFiles.length > 0 ? true : false}/>
         ) : <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>
         }
       </div>

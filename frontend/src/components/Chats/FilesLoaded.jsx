@@ -10,6 +10,7 @@ const FilesLoaded = ({newFiles, setNewFiles, files, chatId}) => {
     const inputRef = useRef(null)
     const [filesToAdd, setFilesToAdd] = useState([])
     const [newFilesUploaded, setNewFilesUploaded] = useState(false)
+    const [confirmRemove, setConfirmRm] = useState(false)
 
     const cerrarVentana = () =>{
         setNewFilesUploaded(false)
@@ -37,7 +38,7 @@ const FilesLoaded = ({newFiles, setNewFiles, files, chatId}) => {
                 files != null ? (
                     files.map((file, index)=>(
                         <div key={index}>
-                            <FileContainer file={file}/>
+                            <FileContainer file={file} chatId={chatId} refetch={()=>{setNewFiles(!newFiles)}}/>
                         </div>
                     ))
                     ) : id === '0' ? null : <h3 className='p-2 bg-color-lightblack rounded-lg'>Add files to start chating</h3>
