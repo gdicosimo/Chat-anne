@@ -84,26 +84,34 @@ show_spinner() {
 check_docker_engine() {
     if ! docker info &> /dev/null; then
         echo "Docker Engine no está corriendo. Intentando iniciarlo..."
-        if command -v dockerd &> /dev/null; then
-            nohup sudo dockerd &> /dev/null &
-            sleep 5
-            if ! docker info &> /dev/null; then
-                echo "No se pudo iniciar Docker Engine. Por favor, inicia Docker manualmente y vuelve a intentar."
-                exit 1
+        if [[ $(uname) == "MINGW"* ]]; then
+            read -p "¿Queres abrir Docker Desktop o solo el daemon de Docker? (desktop/daemon): " docker_mode
+            if [[ "$docker_mode" == "desktop" ]]; then
+                start "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+            elif [[ "$docker_mode" == "daemon" ]]; then
+                start "C:\Program Files\Docker\Docker\resources\dockerd.exe"
             else
-                echo "Docker Engine iniciado exitosamente."
+                echo "Opción no válida. Por favor, selecciona 'desktop' o 'daemon'."
+                exit 1
             fi
+            sleep 5
         else
-            echo "dockerd no encontrado. Por favor, asegúrate de que Docker esté instalado correctamente."
+            if command -v dockerd &> /dev/null; then
+                nohup sudo dockerd &> /dev/null &
+                sleep 5
+            else
+                echo "dockerd no encontrado. Por favor, asegúrate de que Docker esté instalado correctamente."
+                exit 1
+            fi
+        fi
+
+        if ! docker info &> /dev/null; then
+            echo "No se pudo iniciar Docker Engine. Por favor, inicia Docker manualmente y vuelve a intentar."
             exit 1
+        else
+            echo "Docker Engine iniciado exitosamente."
         fi
     fi
-}
-
-open_docker_desktop() {
-    echo "Opening Docker Desktop..."
-    docker_desktop_path=$(powershell.exe -Command "(Get-Process 'Docker Desktop').Path")
-    start "$docker_desktop_path"
 }
 
 
@@ -119,11 +127,12 @@ run_docker() {
         echo "El proyecto está corriendo en modo producción en http://localhost/"
     else
         echo "Modo no válido seleccionado."
+        exit 1
     fi
 }
 
 main() {
-    read -p "¿Quieres instalar las dependencias del proyecto localmente? (y/n): " install_local
+    read -p "¿Queres instalar las dependencias del proyecto localmente? (y/n): " install_local
 
     if [[ "$install_local" =~ ^[Yy]$ ]]; then
         # Check if Python command is available
@@ -160,16 +169,24 @@ main() {
     get_api_key
     check_docker_engine
 
-    read -p "¿Quieres ejecutar el proyecto? (y/n): " run_project
+    read -p "¿Queres ejecutar el proyecto? (y/n): " run_project
     if [[ "$run_project" =~ ^[Yy]$ ]]; then
-        read -p "¿En qué modo quieres ejecutar el proyecto? (dev/prod): " mode
-        if [[ $(uname) == "MINGW"* ]]; then
-            open_docker_desktop
-        fi
+        read -p "¿En qué modo queres ejecutar el proyecto? (dev/prod): " mode
         run_docker "$mode"
+    fi    
+    
+    read -p "¿Queres bajar el proyecto? (y/n): " drop_project
+    if [[ "$drop_project" =~ ^[Yy]$ ]]; then
+        echo "Bajando el proyecto..."
+        docker compose down &> /dev/null &
+        show_spinner $!
+        echo "El proyecto ha sido bajado exitosamente."
+    else 
+        echo "Recuerda que para bajar el proyecto deberías usar el siguiente comando: docker compose down"
     fi
-
+    
     read -rp "Presiona Enter para salir..." input
+
 }
 
 main
