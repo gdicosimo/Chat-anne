@@ -9,7 +9,7 @@ Chat-anne ofrece una forma intuitiva y conveniente de explorar y comprender el c
 La estructura general de las dependencias, bibliotecas y herramientas del proyecto es la siguiente:
 
 ~~~
-project/
+Chat-anne/
 ├── backend/
 │   ├── src/ # Flask + LangChain + MongoDB + ChromaDB
 │   └── requirements.txt/ # Dependencias de Flask y LangChain
@@ -24,8 +24,7 @@ project/
 
 ## Requisitos
 
-Previo a utilizar la aplicación, se requerirá una API key de Gemini para utilizar el modelo ya entrenado por Google. Se puede obtener fácilmente a través de Google AI Studio, utilizando el siguiente enlace:
-> https://aistudio.google.com/app/u/0/apikey
+Previo a utilizar la aplicación, se requerirá una [API key de Gemini](https://aistudio.google.com/app/u/0/apikey) para utilizar el modelo ya entrenado por Google.
 
 - Docker: [Instalación de Docker](https://docs.docker.com/get-docker/)
 - Docker Compose: [Instalación de Docker Compose](https://docs.docker.com/compose/install/)
@@ -58,7 +57,7 @@ Para la instalación automática de las dependencias del proyecto, primero que n
 
 Este script abrirá una nueva terminal de CMD y realizará las siguientes tareas:
 
-- Consultará si se desean instalar las dependencias del frontend y del backend de manera local (recomendado ya que por el momento no se cuenta con ningún servidor externo para el alojamiento de la aplicación). Esto puede rechazarse, mientras que si se elige hacerlo:
+- Consultará si se desean instalar las dependencias del frontend y del backend de manera local (recomendado si se desea levantar de forma local e individual cada stack). Esto puede rechazarse, mientras que si se elige hacerlo:
   - Instalará las dependencias del backend utilizando un entorno virtual de Python ("venv") en el directorio `backend` .
   - Instalará las dependencias del frontend utilizando npm en el directorio `frontend` .
 - Seguidamente, solicitará la API key de Gemini obtenida según los pasos descriptos en el apartado de `Requisitos` . Esta última deberá copiarse y pegarse, y a continuación el script creará un archivo .env en el subdirectorio de backend\src\rag\model. De este modo, la aplicación podrá comunicarse con el modelo provisto por Gemini.
@@ -66,7 +65,7 @@ Este script abrirá una nueva terminal de CMD y realizará las siguientes tareas
 
 Es importante aclarar que una vez que se desee dejar de ejecutar la aplicación, será necesario dar de baja los contenedores. Para ello, ejecutar el paso número 3 de la sección de `Desarrollo` o de `Producción` (según corresponda) en el apartado de `Uso` .
 
-#### Nota: Tener en cuenta que si se está trabajando desde Windows, será necesario primero iniciar el demonio de Docker Engine para poder levantar los contenedores mientras este se ejecuta en segundo plano. Por el contrario, desde Linux esto no será necesario.
+   > Tener en cuenta que si se está trabajando desde Windows, será necesario primero iniciar el demonio de Docker Engine para poder levantar los contenedores mientras este se ejecuta en segundo plano. Por el contrario, desde Linux esto no será necesario.
 
 ## Uso
 
@@ -74,10 +73,8 @@ Si bien el script anteriormente mencionado permite correr la aplicación directa
 
 A continuación se explica brevemente cómo se puede levantar la aplicación de ambas maneras sin necesidad de utilizar el script (tener en cuenta que de todos modos al menos una vez será necesario correrlo dado que los siguientes comandos no incluyen la instalación de dependencias, bibliotecas ni creación del archivo asociado a la API key).
 
-#### Nota: Tener en cuenta que si se está trabajando desde Windows, será necesario primero iniciar el demonio de Docker Engine para poder levantar los contenedores mientras este se ejecuta en segundo plano. Por el contrario, desde Linux esto no será necesario.
 
-
-### $Modo$ $de$ $Desarrollo$
+### Modo de Desarrollo
 
 Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 
@@ -103,7 +100,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
    docker compose -f compose-dev.yml up down
    ```
 
-### $Modo$ $de$ $Producción$
+### Modo de Producción
 
 Para desplegar la aplicación en un entorno de producción, puedes utilizar los mismos comandos de Docker Compose.
 
