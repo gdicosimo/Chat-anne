@@ -47,8 +47,7 @@ def login(username, pwd):
             access_token = create_access_token(
                 identity=user['username'], expires_delta=timedelta(hours=5))
             response = make_response({"message": "login Success"})
-            response.set_cookie('access_token_cookie', access_token,
-                                httponly=True, samesite='None', secure=True)
+            response.set_cookie('access_token_cookie', access_token, samesite='None', secure=True)
             return response
         else:
             return jsonify({'message': 'Login Failed'}), 401
