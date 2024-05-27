@@ -27,25 +27,27 @@ const Login = (props) => {
         <h1 className='text-4xl'>{props.login ? 'Welcome Back to Chat-anne!' : 'Join Chat-anne!'}</h1>
         <div className='mt-8 '>
           <div className='flex flex-col'>
-            <label className='text-lg font-medium text-color-cream'>Email</label>
+            <label className='text-lg font-medium text-color-cream font-poppins ml-2 mb-2'>Email</label>
             <input
-              className='text-white w-full border-[1px] border-color-cream rounded-xl p-4 mt-2 bg-transparent focus:border-color-cream focus:outline-none'
+              className="font-poppins font-medium text-color-cream placeholder:text-color-cream/50 
+              placeholder:font-poppins placeholder:font-medium block bg-color-middleblack hover:bg-color-lightblack transition-all duration-500 w-full  rounded-xl p-4 focus:outline-none" 
               placeholder='Enter your email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className='flex flex-col mt-4'>
-            <label className='text-lg font-medium text-color-cream'>Password</label>
-            <input
-              className='text-white w-full border-[1px] border-color-cream rounded-xl p-4 mt-2 bg-transparent focus:border-color-cream focus:outline-none'
-              placeholder='Enter your password'
-              value={password}
-              type='password'
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <label className='text-lg font-medium text-color-cream font-poppins ml-2 mb-2'>Password</label>
+              <input
+                className="font-poppins font-medium text-color-cream placeholder:text-color-cream/50 
+                placeholder:font-poppins placeholder:font-medium block bg-color-middleblack hover:bg-color-lightblack transition-all duration-500 w-full  rounded-xl p-4 focus:outline-none" 
+                placeholder='Enter your password'
+                value={password}
+                type='password'
+                onChange={(e) => setPassword(e.target.value)}
+              />
           </div>
-          <div className='mt-8 flex flex-col gap-y-4'>
+          <div className='mt-8 flex flex-col gap-y-4 font-poppins'>
             <Link
               onClick={() => handleAuth(props.login ? 'GET_LOGIN' : 'GET_REGISTER')}
               className='active:scale-[.98] active:duration-75 transition-all hover:scale-[0.99] 
