@@ -24,16 +24,25 @@ Chat-anne/
 
 ## Requisitos
 
-Previo a utilizar la aplicación, se requerirá una [API key de Gemini](https://aistudio.google.com/app/u/0/apikey) para utilizar el modelo ya entrenado por Google.
+Para utilizar la aplicación, se requerirá una [API key de Gemini](https://aistudio.google.com/app/u/0/apikey) para acceder al modelo entrenado por Google.
+
+### Instalación con Docker
 
 - Docker: [Instalación de Docker](https://docs.docker.com/get-docker/)
 - Docker Compose: [Instalación de Docker Compose](https://docs.docker.com/compose/install/)
 
-Por otra parte, para poder correr la aplicacion de manera local, se requerirán ciertas dependencias y bibliotecas tanto para el frontend como para el backend. Estas últimas están principalmente relacionadas a Vite, Tailwind y React para el frontend y a Flask, Langchain, MongoDB y ChromaDB para el backend.
+Docker se encargará de instalar todas las dependencias necesarias para el proyecto, facilitando su configuración y ejecución.
 
-Así que, para simplificar el trabajo de la instalación de las mismas, se desarrolló un script "setup.sh" que hace este trabajo (en el apartado de `Instalación de Dependencias del Proyecto` se amplía más al respecto). 
+### Instalación Local
 
-## Configuración
+Si prefieres correr la aplicación de manera local, se requerirán ciertas dependencias y bibliotecas tanto para el frontend como para el backend. Estas incluyen:
+
+- **Frontend:** Vite, Tailwind y React
+- **Backend:** Flask, Langchain, MongoDB y ChromaDB
+
+Para simplificar la instalación de estas dependencias, se ha desarrollado un script `setup.sh` que automatiza este proceso.
+
+## Instalación del Proyecto
 
 1. Clona este repositorio en tu máquina local:
 
@@ -47,7 +56,7 @@ Así que, para simplificar el trabajo de la instalación de las mismas, se desar
    cd Chat-anne
    ```
 
-## Instalación de Dependencias del Proyecto
+### Configuración
 
 Para la instalación automática de las dependencias del proyecto, primero que nada deberá ejecutarse el script `setup.sh`, proporcionado en el directorio raíz del proyecto:
 
@@ -67,14 +76,13 @@ Es importante aclarar que una vez que se desee dejar de ejecutar la aplicación,
 
    > Tener en cuenta que si se está trabajando desde Windows, será necesario primero iniciar el demonio de Docker Engine para poder levantar los contenedores mientras este se ejecuta en segundo plano. Por el contrario, desde Linux esto no será necesario.
 
-## Uso
+### Uso
 
 Si bien el script anteriormente mencionado permite correr la aplicación directamente en modo de producción, también se creó un modo de desarrollo para trabajar sobre la misma.
 
 A continuación se explica brevemente cómo se puede levantar la aplicación de ambas maneras sin necesidad de utilizar el script (tener en cuenta que de todos modos al menos una vez será necesario correrlo dado que los siguientes comandos no incluyen la instalación de dependencias, bibliotecas ni creación del archivo asociado a la API key).
 
-
-### Modo de Desarrollo
+#### Modo de Desarrollo
 
 Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
 
@@ -100,7 +108,7 @@ Para ejecutar la aplicación en modo de desarrollo, sigue estos pasos:
    docker compose -f compose-dev.yml up down
    ```
 
-### Modo de Producción
+#### Modo de Producción
 
 Para desplegar la aplicación en un entorno de producción, puedes utilizar los mismos comandos de Docker Compose.
 
