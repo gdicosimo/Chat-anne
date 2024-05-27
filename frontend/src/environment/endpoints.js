@@ -9,7 +9,8 @@ const endpoints = {
   RENAME: '/chats/rename-chat',
   ADD_DOC: '/chats/append-pdf', //formdata
   GET_MSGS: '/chats/messages', //formdata
-  DELETE: '/chats/remove-chat'
+  DELETE: '/chats/remove-chat',
+  POP_PDF: '/chats/pop-pdf'
 };
 
 export default endpoints;

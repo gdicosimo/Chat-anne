@@ -11,7 +11,8 @@ const apiPaths = {
   GET_RENAME: `${environment.hostBackend}${endpoints.RENAME}`,
   GET_ADD_DOC: `${environment.hostBackend}${endpoints.ADD_DOC}`,
   GET_MSGS: `${environment.hostBackend}${endpoints.GET_MSGS}`,
-  GET_DELETE: `${environment.hostBackend}${endpoints.DELETE}`
+  GET_DELETE: `${environment.hostBackend}${endpoints.DELETE}`,
+  GET_POP_PDF: `${environment.hostBackend}${endpoints.POP_PDF}`,
 };
 
 const endpointMethods = {
@@ -21,7 +22,8 @@ const endpointMethods = {
   GET_RENAME: 'PUT',
   GET_ADD_DOC: 'PUT',
   GET_MSGS: 'GET',
-  GET_DELETE: 'DELETE'
+  GET_DELETE: 'DELETE',
+  GET_POP_PDF: 'PUT'
 };
 
 export {apiPaths, endpointMethods};
