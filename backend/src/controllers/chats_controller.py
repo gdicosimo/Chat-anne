@@ -113,7 +113,7 @@ def append_pdf(chat_id, pdf_file):
         if len(chat) == 0:
             return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
-        pdfs_chat = chat[0]['pdfs']
+        pdfs_chat = chat[0].get('pdfs', [])
 
         if pdf_name in pdfs_chat:
             return jsonify({'message': 'El PDF ya se encuentra añadido al chat'}), 400
