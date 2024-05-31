@@ -1,19 +1,19 @@
-from datetime import datetime
-
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 from bson import ObjectId
-from flask import current_app, jsonify
+from flask import jsonify, current_app
 from flask_jwt_extended import get_jwt_identity
 
 from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
 from controllers.langchain_controller import Langchain
 
+
 MODEL_USER = 'users'
 MODEL_CHAT = 'chats'
-# OWNER = get_jwt_identity()  # Chequear esto
 
 REMOVE_INVALID_CHARACTERS = re.compile(r'[^a-zA-Z0-9\-_\.]')
 REMOVE_START_END_NON_ALPHANUM = re.compile(r'^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$')
@@ -100,7 +100,7 @@ def remove_chat(chat_name):
         return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
 
 
-def append_pdf(chat_id, pdf_file):
+def __process_pdf(chat_id, pdf_file):
     try:
         temp_pdf_path = None
         pdf_name = pdf_file.filename[:-4]  # quito la extension .pdf
@@ -111,22 +111,30 @@ def append_pdf(chat_id, pdf_file):
         })
 
         if len(chat) == 0:
-            return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
+            return {'message': 'No se encontro un chat con el id y el usuario logeado'}, 400
 
         chat = update_one_db(MODEL_CHAT, {'_id': ObjectId(chat_id)},
                              {'$push': {'pdfs': pdf_name}})
 
         temp_pdf_path = __save_pdf_to_temp(pdf_file)
 
-        # chat = __generate_chat_name(chat_id)
-        Langchain.append_pdf_if_exists(chat_id, temp_pdf_path, pdf_name)
+        Langchain.append_pdf_if_exists(
+            chat_id, temp_pdf_path, pdf_name)
 
-        return jsonify({'message': f'El pdf {pdf_name.title()} se agregó al chat {chat_id} correctamente!'}), 200
+        return {'message': f'El pdf {pdf_name.title()} se agregó al chat {chat_id} correctamente!'}
     except Exception as e:
-        return jsonify({'error': f'Error en el servidor: {str(e)}'}), 500
+        return {'error': f'Error en el servidor: {str(e)}'}, 500
     finally:
         if temp_pdf_path is not None:
             __delete_temp_file(temp_pdf_path)
+
+
+def append_pdf(chat_id, pdf_files):
+    results = []
+    for pdf_file in pdf_files:
+        result = __process_pdf(chat_id, pdf_file)
+        results.append(result)
+    return results
 
 
 def pop_pdf(id_chat, pdf_name):
@@ -155,15 +163,14 @@ def answer_and_save_message(id_chat, query):
         if len(chat) == 0:
             return jsonify({'message': 'No se encontro un chat con el id y el usuario logeado'}), 400
 
-        #chat = __generate_chat_name(id_chat)
-        response = Langchain.response(query, id_chat,chat)
+        # chat = __generate_chat_name(id_chat)
+        response = Langchain.response(query, id_chat, chat)
 
         new_message = {
             'query': query,
             'answer': response,
             'created_at': datetime.now()
         }
-
 
         chat = update_one_db(MODEL_CHAT, {'_id': ObjectId(id_chat)},
                              {'$push': {'messages': new_message}},
