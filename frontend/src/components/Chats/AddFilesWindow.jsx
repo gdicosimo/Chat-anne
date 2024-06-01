@@ -100,8 +100,8 @@ const AddFilesWindow = ({cerrarVentana, chatId, files}) => {
                     }
                 }}>
                 {
-                            loading ? <ThreeDot variant="pulsate" color="#1E1E1E" size="small" text="" textColor="" /> : 'Accept'
-                        }
+                    loading ? <ThreeDot variant="pulsate" color="#1E1E1E" size="small" text="" textColor="" /> : 'Accept'
+                }
               </button>
               <button
                 className='bg-color-lightblack/20 border-2 h-min py-4 px-6 rounded-xl btn-animated font-poppins text-color-cream flex-1' 

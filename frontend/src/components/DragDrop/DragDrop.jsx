@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import DragDropLogic from './DragDropLogic';
-import { trash } from '../../assets';
+import { trash, error as errorimg } from '../../assets';
 import { ThreeDot } from 'react-loading-indicators';
 import {apiPaths} from '../../environment/apiPaths';
 
@@ -90,7 +90,12 @@ const DragDrop = ({ setFiles, chatId }) => {
                             </span>{" "}
                             to upload
                         </p>
-                        {error ? <h3 className='text-red-600'>Error al subir archivos. Intente nuevamente</h3> : null}
+                        {error ? (
+                            <div className='flex flex-row gap-2 items-center my-2'>
+                                <img src={errorimg} className='h-5'/>
+                                <h1 className='font-normal text-yellow-400 text-base '>Error al cargar el pdf.</h1>
+                            </div>
+                        ) : null}
                         {filesAdded ? (
                             <div className="flex flex-col items-start py-3 gap-1 max-h-28 overflow-auto scrollbar scrollbar-thumb-color-lightblack ">
                                 {filesInBox.map((file, idx) => (
