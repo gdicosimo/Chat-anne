@@ -17,7 +17,10 @@ const DragDrop = ({ setFiles, chatId }) => {
         const formChatId = chatId['id_chat '];
         const formData = new FormData();
         formData.append('id_chat', formChatId);
-        formData.append('pdf_file', filesInBox[0]);
+        //formData.append('pdf_file', filesInBox[0]);
+        for (let i = 0; i < filesInBox.length; i++) {
+            formData.append('pdf_files', filesInBox[i]);
+          }
         console.log(Object.fromEntries(formData));
         try {
             setLoading(true)
