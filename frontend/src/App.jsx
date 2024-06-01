@@ -83,7 +83,7 @@ function App() {
       }
       <div className='w-full max-w-[900px] overflow-scroll scrollbar scrollbar-thumb-color-lightblack h-full flex'>
         {id !== '0' && data != null ? (
-          <Chat messages={messages} chatId={chatId}  refresh={refresh} hasFiles={chatFiles.length > 0 ? true : false}/>
+          <Chat messages={messages} chatId={chatId}  refresh={refresh} hasFiles={chatFiles?.length > 0 ? true : false}/>
         ) : <Emptychat files={filesLoaded} setFiles={setFilesLoaded} chatId={chatId}/>
         }
       </div>

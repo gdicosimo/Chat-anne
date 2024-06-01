@@ -17,7 +17,10 @@ const AddFilesWindow = ({cerrarVentana, chatId, files}) => {
       
       const formData = new FormData();
       formData.append('id_chat', chatId);
-      formData.append('pdf_file', files[0]);
+      //formData.append('pdf_files', files);
+      for (let i = 0; i < files.length; i++) {
+        formData.append('pdf_files', files[i]);
+      }
       console.log(Object.fromEntries(formData))
       try {
           setLoading(true)
