@@ -22,11 +22,11 @@ class GoogleGenerativeAI:
             raise ValueError("No se proporcionó la API key")
 
     @staticmethod
-    def __initialize_llm():
+    def __initialize_llm(temperature):
         if GoogleGenerativeAI.__api_key is None:
             GoogleGenerativeAI.__initialize()
         GoogleGenerativeAI.__chat_google = ChatGoogleGenerativeAI(
-            model=GoogleGenerativeAI.__model, temperature=0.2)
+            model=GoogleGenerativeAI.__model, temperature=temperature)
 
     @staticmethod
     def __initialize_embedding():
@@ -44,9 +44,9 @@ class GoogleGenerativeAI:
         return GoogleGenerativeAI.__embedding_model
 
     @staticmethod
-    def get_llm() -> ChatGoogleGenerativeAI:
+    def get_llm(temperature=0) -> ChatGoogleGenerativeAI:
         if GoogleGenerativeAI.__chat_google is None:
-            GoogleGenerativeAI.__initialize_llm()
+            GoogleGenerativeAI.__initialize_llm(temperature)
         return GoogleGenerativeAI.__chat_google
 
     @staticmethod

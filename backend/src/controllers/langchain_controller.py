@@ -1,19 +1,24 @@
 import uuid
+import re
+from operator import itemgetter
 
 from langchain_community.vectorstores import Chroma
 from db.chromadb.chromadb import connect_db, create, rename, delete, exists, exists_pdf_in, pop_pdf_in, is_empty, list
-
 
 from langchain.docstore.document import Document
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.memory import ConversationBufferMemory
+from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
 
 from rag.model.google_generativeai import GoogleGenerativeAI
 from rag.model.open_ai import OpenAI
 
 from rag.data_processing.processing import processing
-from rag.prompts.prompt import prompt
+from rag.prompts.prompt import prompt, prompt_decomposition, decomposition_prompt, prompt_rag_fusion
+
+MATCH_QUESTIONS = re.compile(r'^\s*(1\.|2\.|3\.)')
 
 
 class Langchain:
@@ -97,27 +102,69 @@ class Langchain:
             memory = ConversationBufferMemory(
                 memory_key="chat_history", return_messages=True)
 
-            if 'messages' in history_chat[0]:
+            if history_chat and 'messages' in history_chat[0]:
                 for entry in history_chat[0]['messages']:
-                    memory.save_context({"input": entry['query']}, {
-                                        "output": entry['answer']})
+                    query = entry.get('query', '')
+                    answer = entry.get('answer', '')
+                    if query and answer:
+                        memory.save_context(
+                            {"input": query}, {"output": answer})
 
             llm = GoogleGenerativeAI.get_llm()
 
-            combine_docs_chain = create_stuff_documents_chain(llm, prompt)
-            retrieval_chain = create_retrieval_chain(
-                retriever, combine_docs_chain)
+            question = {"input": query, "chat_history": memory}
+            response_decomposition = Langchain.__decomposition_query(
+                question, llm, retriever)
 
-            query = {"input": query}
-            query["chat_history"] = memory
-
-            response = retrieval_chain.invoke(query)
-
-            return response["answer"]
+            return response_decomposition
         except Exception as e:
             raise e
 
+    @staticmethod
+    def __format_qa_pair(question, answer):
+        return f"Question: {question}\nAnswer: {answer}".strip()
+
+    @staticmethod
+    def __decomposition_query(question, llm, retriever):
+        # Tarda bastante en contestar
+        try:
+            generate_queries_decomposition = (
+                prompt_decomposition
+                | llm
+                | StrOutputParser()
+                | (lambda x: x.split("\n"))
+            )
+
+            questions = generate_queries_decomposition.invoke(
+                {"question": question})
+            q_a_pairs = ""
+
+            questions = [
+                line.strip() for line in questions if MATCH_QUESTIONS.match(line)]
+
+            for q in questions:
+
+                rag_chain = (
+                    {"context": itemgetter("question") | retriever,
+                     "question": itemgetter("question"),
+                     "q_a_pairs": itemgetter("q_a_pairs")}
+                    | decomposition_prompt
+                    | llm
+                    | StrOutputParser()
+                )
+
+                answer = rag_chain.invoke(
+                    {"question": q, "q_a_pairs": q_a_pairs})
+                q_a_pair = Langchain.__format_qa_pair(q, answer)
+                q_a_pairs += f"\n---\n{q_a_pair}"
+
+            return answer
+
+        except Exception as e:
+            raise RuntimeError(f"Error in decomposition query: {e}")
+
     # This function is only for testing
+
     @ staticmethod
     def list_chats():
         try:
