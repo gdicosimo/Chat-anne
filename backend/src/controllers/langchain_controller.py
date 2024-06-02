@@ -10,8 +10,11 @@ from langchain.chains import create_retrieval_chain
 from langchain.memory import ConversationBufferMemory
 
 from rag.model.google_generativeai import GoogleGenerativeAI
+from rag.model.open_ai import OpenAI
+
 from rag.data_processing.processing import processing
 from rag.prompts.prompt import prompt
+
 
 class Langchain:
 
@@ -79,7 +82,7 @@ class Langchain:
             raise e
 
     @staticmethod
-    def response(query: str, chat: str,history_chat) -> str:
+    def response(query: str, chat: str, history_chat) -> str:
         try:
 
             if is_empty(chat):
@@ -90,16 +93,18 @@ class Langchain:
             vectorstore = Langchain.__get_chroma_client(chat)
 
             retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
-            
-            memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+            memory = ConversationBufferMemory(
+                memory_key="chat_history", return_messages=True)
 
             if 'messages' in history_chat[0]:
                 for entry in history_chat[0]['messages']:
-                    memory.save_context({"input": entry['query']}, {"output": entry['answer']})
+                    memory.save_context({"input": entry['query']}, {
+                                        "output": entry['answer']})
 
             llm = GoogleGenerativeAI.get_llm()
 
-            combine_docs_chain = create_stuff_documents_chain(llm,prompt)
+            combine_docs_chain = create_stuff_documents_chain(llm, prompt)
             retrieval_chain = create_retrieval_chain(
                 retriever, combine_docs_chain)
 

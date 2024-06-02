@@ -11,3 +11,4 @@ pypdf
 chromadb
 google.generativeai
 langchain-google-genai==1.0.3
+langchain_openai
