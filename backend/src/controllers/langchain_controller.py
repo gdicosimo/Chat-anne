@@ -16,7 +16,7 @@ from rag.model.google_generativeai import GoogleGenerativeAI
 from rag.model.open_ai import OpenAI
 
 from rag.data_processing.processing import processing
-from rag.prompts.prompt import prompt, prompt_decomposition, decomposition_prompt, prompt_rag_fusion
+from rag.prompts.prompt import prompt_simple, prompt_decomposition, decomposition_prompt, prompt_rag_fusion
 
 MATCH_QUESTIONS = re.compile(r'^\s*(1\.|2\.|3\.)')
 
@@ -112,13 +112,38 @@ class Langchain:
 
             llm = GoogleGenerativeAI.get_llm()
 
-            question = {"input": query, "chat_history": memory}
-            response_decomposition = Langchain.__decomposition_query(
-                question, llm, retriever)
+            question = {"question": query, "chat_history": memory}
 
-            return response_decomposition
+            return Langchain.__simple_query(question, llm, retriever)
+
+            # return Langchain.__decomposition_query(question, llm, retriever)
+
+           # return Langchain.__rag_fusion(question, llm, retriever)
+
         except Exception as e:
             raise e
+
+    @staticmethod
+    def __generate_queries_chain(prompt, llm):
+        def filter_and_strip_questions(output):
+            questions = output.split("\n")
+            return [line.strip() for line in questions if MATCH_QUESTIONS.match(line)]
+
+        return (
+            prompt
+            | llm
+            | StrOutputParser()
+            | filter_and_strip_questions
+        )
+
+    @staticmethod
+    def __generate_queries(question, llm, prompt):
+        generate_queries_decomposition = Langchain.__generate_queries_chain(
+            prompt, llm)
+
+        questions = generate_queries_decomposition.invoke(
+            {"question": question})
+        return questions
 
     @staticmethod
     def __format_qa_pair(question, answer):
@@ -127,34 +152,28 @@ class Langchain:
     @staticmethod
     def __decomposition_query(question, llm, retriever):
         # Tarda bastante en contestar
+
         try:
-            generate_queries_decomposition = (
-                prompt_decomposition
-                | llm
-                | StrOutputParser()
-                | (lambda x: x.split("\n"))
-            )
 
-            questions = generate_queries_decomposition.invoke(
-                {"question": question})
+            questions = Langchain.__generate_queries(
+                question, llm, prompt_decomposition)
             q_a_pairs = ""
-
-            questions = [
-                line.strip() for line in questions if MATCH_QUESTIONS.match(line)]
 
             for q in questions:
 
                 rag_chain = (
                     {"context": itemgetter("question") | retriever,
                      "question": itemgetter("question"),
-                     "q_a_pairs": itemgetter("q_a_pairs")}
+                     "q_a_pairs": itemgetter("q_a_pairs"),
+                     "chat_history": itemgetter("chat_history")
+                     }
                     | decomposition_prompt
                     | llm
                     | StrOutputParser()
                 )
 
                 answer = rag_chain.invoke(
-                    {"question": q, "q_a_pairs": q_a_pairs})
+                    {"question": q, "q_a_pairs": q_a_pairs, "chat_history": question})
                 q_a_pair = Langchain.__format_qa_pair(q, answer)
                 q_a_pairs += f"\n---\n{q_a_pair}"
 
@@ -163,7 +182,59 @@ class Langchain:
         except Exception as e:
             raise RuntimeError(f"Error in decomposition query: {e}")
 
-    # This function is only for testing
+    @staticmethod
+    def __rag_fusion(question, llm, retriever):
+        def reciprocal_rank_fusion(results, k=10):
+            from langchain.load import dumps, loads
+
+            fused_scores = {}
+
+            for docs in results:
+                for rank, doc in enumerate(docs):
+                    doc_str = dumps(doc)
+                    if doc_str not in fused_scores:
+                        fused_scores[doc_str] = 0
+                    previous_score = fused_scores[doc_str]
+                    fused_scores[doc_str] += 1 / (rank + k)
+
+            reranked_results = [
+                (loads(doc), score)
+                for doc, score in sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)
+            ]
+
+            return reranked_results
+
+        retrieval_chain_rag_fusion = Langchain.__generate_queries_chain(
+            prompt_rag_fusion, llm) | retriever.map() | reciprocal_rank_fusion
+
+        final_rag_chain = ({
+            "context": retrieval_chain_rag_fusion,
+            "question": itemgetter("question"), "chat_history": itemgetter("chat_history")
+        }
+            | prompt_simple
+            | llm
+            | StrOutputParser()
+        )
+
+        answer = final_rag_chain.invoke(question)
+
+        return answer
+
+    @staticmethod
+    def __simple_query(question, llm, retriever):
+        rag_chain = ({
+            "context": itemgetter("question") | retriever,
+            "question": itemgetter("question"),
+            "chat_history": itemgetter("chat_history")
+        }
+            | prompt_simple
+            | llm
+            | StrOutputParser()
+        )
+
+        answer = rag_chain.invoke(question)
+
+        return answer
 
     @ staticmethod
     def list_chats():
