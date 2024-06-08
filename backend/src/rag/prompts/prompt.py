@@ -41,6 +41,8 @@ template_q3 = """
     Output (3 queries):
 """
 
+#Se deeria unificar q3 y q4
+
 template_q4 = """
     Eres un útil asistente que genera múltiples consultas de búsqueda basadas en una única consulta de entrada. \n
     Generar múltiples consultas de búsqueda relacionadas con: {question} \n
