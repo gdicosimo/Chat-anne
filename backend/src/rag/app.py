@@ -15,7 +15,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from rag.model.google_generativeai import GoogleGenerativeAI
 from rag.model.open_ai import OpenAI
 
-from rag.data_processing.processing import processing
+from rag.data_processing.processing import processing, divideDocuments
 from rag.prompts.prompt import prompt_simple, prompt_decomposition, decomposition_prompt, prompt_rag_fusion
 
 MATCH_QUESTIONS = re.compile(r'^\s*(1\.|2\.|3\.)')
@@ -47,34 +47,52 @@ class Langchain:
             raise e
 
     @staticmethod
+    def generateFinalChunks(docs, collection, pdf_name):
+        new_docs = []
+        ids_docs = []
+        for doc in docs:
+            new_doc = Document(
+                page_content=doc.page_content,
+                metadata={
+                    'page': doc.metadata.get('page'),
+                    'pdf': pdf_name
+                }
+            )
+            new_docs.append(new_doc)
+            ids_docs.append(str(uuid.uuid1()))
+        collection.add_documents(documents=new_docs, ids=ids_docs)    
+
+    @staticmethod
     def append_pdf_if_exists(chat: str, pdf: object, pdf_name: str):
         try:
             chat_client = Langchain.__get_chroma_client(chat)
 
-            docs = processing(pdf)
+            chat_client_extra = Langchain.__get_chroma_client(chat + "_extra")
+
+            docs, doc_for_level3, chunk_size = processing(pdf)
 
             if exists_pdf_in(chat, pdf_name):
                 raise ValueError(
                     f"Ya se agrego '{pdf_name}' al chat '{chat}'."
                 )
+            
+            Langchain.generateFinalChunks([doc_for_level3], chat_client_extra, pdf_name)
 
-            new_docs = []
-            ids_docs = []
-            for doc in docs:
-                new_doc = Document(
-                    page_content=doc.page_content,
-                    metadata={
-                        'page': doc.metadata.get('page'),
-                        'pdf': pdf_name
-                    }
-                )
-                new_docs.append(new_doc)
-                ids_docs.append(str(uuid.uuid1()))
+            retriever = chat_client_extra.as_retriever(search_kwargs={"k": 1})
 
-            chat_client.add_documents(
-                documents=new_docs,
-                ids=ids_docs
-            )
+            question = {"question": "Resumime este documento", "chat_history": None}
+
+            response = Langchain.getAnswer(question, retriever) # corresponde al resumen generan del PDF que se almacena tambien como un vector despues
+
+            Langchain.generateFinalChunks(docs, chat_client, pdf_name) # corresponde a los vectores de nivel 1
+
+            new_chunk_size = chunk_size // 5
+
+            if (new_chunk_size >= 50):
+                docs2 = divideDocuments(new_chunk_size, docs)
+                Langchain.generateFinalChunks(docs2, chat_client, pdf_name) # corresponde a los vectores de nivel 2
+            
+            chat_client.add_documents(documents=[Document(page_content=response, metadata={'page': 0, 'pdf': pdf_name})], ids=[str(uuid.uuid1())])
 
         except Exception as e:
             raise e
@@ -85,6 +103,15 @@ class Langchain:
             pop_pdf_in(chat, pdf)
         except Exception as e:
             raise e
+        
+    @staticmethod
+    def getAnswer(question, retriever) -> str:
+        
+        llm = GoogleGenerativeAI.get_llm()
+
+        #return Langchain.__decomposition_query(question, llm, retriever)
+        #return Langchain.__rag_fusion(question, llm, retriever)
+        return Langchain.__simple_query(question, llm, retriever)
 
     @staticmethod
     def response(query: str, chat: str, history_chat) -> str:
@@ -96,7 +123,7 @@ class Langchain:
                 )
 
             vectorstore = Langchain.__get_chroma_client(chat)
-
+            
             retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
             memory = ConversationBufferMemory(
@@ -110,15 +137,9 @@ class Langchain:
                         memory.save_context(
                             {"input": query}, {"output": answer})
 
-            llm = GoogleGenerativeAI.get_llm()
-
             question = {"question": query, "chat_history": memory}
 
-            return Langchain.__simple_query(question, llm, retriever)
-
-            #return Langchain.__decomposition_query(question, llm, retriever)
-
-            #return Langchain.__rag_fusion(question, llm, retriever)
+            return Langchain.getAnswer(question, retriever)
 
         except Exception as e:
             raise e
