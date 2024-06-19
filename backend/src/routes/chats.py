@@ -43,7 +43,7 @@ def rename_chat_route():
 
 @chats.route('/remove-chat', methods=['DELETE'])
 @jwt_required()
-#@__get_and_validate_params('id_chat')
+# @__get_and_validate_params('id_chat')
 def remove_chat_route():
     chat_name = request.json.get('id_chat')
     return remove_chat(chat_name)
@@ -89,11 +89,10 @@ def get_chats_route():
 
 @chats.route('/messages', methods=['GET'])
 @jwt_required()
-#@__get_and_validate_params('id_chat')
+# @__get_and_validate_params('id_chat')
 def get_all_messages_from_chat_route():
     id_chat = request.args.get('id_chat')
     return get_messages_from_chat(id_chat)
-
 
 
 @chats.errorhandler(404)

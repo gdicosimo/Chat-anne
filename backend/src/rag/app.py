@@ -60,7 +60,7 @@ class Langchain:
             )
             new_docs.append(new_doc)
             ids_docs.append(str(uuid.uuid1()))
-        collection.add_documents(documents=new_docs, ids=ids_docs)    
+        collection.add_documents(documents=new_docs, ids=ids_docs)
 
     @staticmethod
     def append_pdf_if_exists(chat: str, pdf: object, pdf_name: str):
@@ -75,24 +75,33 @@ class Langchain:
                 raise ValueError(
                     f"Ya se agrego '{pdf_name}' al chat '{chat}'."
                 )
-            
-            Langchain.generateFinalChunks([doc_for_level3], chat_client_extra, pdf_name)
+
+            Langchain.generateFinalChunks(
+                [doc_for_level3], chat_client_extra, pdf_name)
 
             retriever = chat_client_extra.as_retriever(search_kwargs={"k": 1})
 
-            question = {"question": "Resumime este documento", "chat_history": None}
+            question = {"question": "Resumime este documento",
+                        "chat_history": None}
 
-            response = Langchain.getAnswer(question, retriever) # corresponde al resumen generan del PDF que se almacena tambien como un vector despues
+            llm = GoogleGenerativeAI.get_llm()
 
-            Langchain.generateFinalChunks(docs, chat_client, pdf_name) # corresponde a los vectores de nivel 1
+            # corresponde al resumen generan del PDF que se almacena tambien como un vector despues
+            response = Langchain.__simple_query(
+                question, llm, retriever)
+
+            # corresponde a los vectores de nivel 1
+            Langchain.generateFinalChunks(docs, chat_client, pdf_name)
 
             new_chunk_size = chunk_size // 5
 
             if (new_chunk_size >= 50):
                 docs2 = divideDocuments(new_chunk_size, docs)
-                Langchain.generateFinalChunks(docs2, chat_client, pdf_name) # corresponde a los vectores de nivel 2
-            
-            chat_client.add_documents(documents=[Document(page_content=response, metadata={'page': 0, 'pdf': pdf_name})], ids=[str(uuid.uuid1())])
+                # corresponde a los vectores de nivel 2
+                Langchain.generateFinalChunks(docs2, chat_client, pdf_name)
+
+            chat_client.add_documents(documents=[Document(page_content=response, metadata={
+                                      'page': 0, 'pdf': pdf_name})], ids=[str(uuid.uuid1())])
 
         except Exception as e:
             raise e
@@ -103,15 +112,15 @@ class Langchain:
             pop_pdf_in(chat, pdf)
         except Exception as e:
             raise e
-        
+
     @staticmethod
-    def getAnswer(question, retriever) -> str:
-        
+    def getAnswer(question, retriever, func) -> str:
+
         llm = GoogleGenerativeAI.get_llm()
 
-        #return Langchain.__decomposition_query(question, llm, retriever)
-        #return Langchain.__rag_fusion(question, llm, retriever)
-        return Langchain.__simple_query(question, llm, retriever)
+        return func(question, retriever, llm)
+        # return Langchain.__rag_fusion(question, llm, retriever)
+        # return Langchain.__simple_query(question, llm, retriever)
 
     @staticmethod
     def response(query: str, chat: str, history_chat) -> str:
@@ -123,23 +132,27 @@ class Langchain:
                 )
 
             vectorstore = Langchain.__get_chroma_client(chat)
-            
-            retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 30})
 
             memory = ConversationBufferMemory(
                 memory_key="chat_history", return_messages=True)
 
             if history_chat and 'messages' in history_chat[0]:
                 for entry in history_chat[0]['messages']:
-                    query = entry.get('query', '')
+                    oldQuery = entry.get('query', '')
                     answer = entry.get('answer', '')
-                    if query and answer:
+                    if oldQuery and answer:
                         memory.save_context(
-                            {"input": query}, {"output": answer})
+                            {"input": oldQuery}, {"output": answer})
+
+            llm = GoogleGenerativeAI.get_llm()
 
             question = {"question": query, "chat_history": memory}
 
-            return Langchain.getAnswer(question, retriever)
+            # return Langchain.__simple_query(question, llm, retriever)
+            return Langchain.__rag_fusion(question, llm, retriever)
+            # return Langchain.__decomposition_query(question, llm, retriever)
 
         except Exception as e:
             raise e
@@ -230,7 +243,8 @@ class Langchain:
 
         final_rag_chain = ({
             "context": retrieval_chain_rag_fusion,
-            "question": itemgetter("question"), "chat_history": itemgetter("chat_history")
+            "question": itemgetter("question"),
+            "chat_history": itemgetter("chat_history")
         }
             | prompt_simple
             | llm
