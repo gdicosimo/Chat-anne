@@ -9,7 +9,7 @@ from flask_jwt_extended import get_jwt_identity
 
 from db.mongodb.mongo import search_db, insert_db, update_one_db, delete_one_db
 
-from controllers.langchain_controller import Langchain
+from rag.app import Langchain
 
 
 MODEL_USER = 'users'
