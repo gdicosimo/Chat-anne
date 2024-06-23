@@ -150,8 +150,8 @@ class Langchain:
 
             question = {"question": query, "chat_history": memory}
 
-            # return Langchain.__simple_query(question, llm, retriever)
-            return Langchain.__rag_fusion(question, llm, retriever)
+            return Langchain.__simple_query(question, llm, retriever)
+            # return Langchain.__rag_fusion(question, llm, retriever)
             # return Langchain.__decomposition_query(question, llm, retriever)
 
         except Exception as e:

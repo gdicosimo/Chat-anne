@@ -20,7 +20,7 @@ def divideDocuments(chunk_size, docs):
 
     text_splitter = RecursiveCharacterTextSplitter(
         # si se utilizan estos separators termina dividiendo por pagina, que es otra alternativa
-        separators=["\n\n", "\n"],
+        # separators=["\n\n", "\n"],
         chunk_size=chunk_size,
         chunk_overlap=chunk_size//5,
         length_function=len,
