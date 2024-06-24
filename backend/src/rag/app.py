@@ -67,7 +67,7 @@ class Langchain:
         try:
             chat_client = Langchain.__get_chroma_client(chat)
 
-            chat_client_extra = Langchain.__get_chroma_client(chat + "_extra")
+            '''chat_client_extra = Langchain.__get_chroma_client(chat + "_extra")'''
 
             docs, doc_for_level3, chunk_size = processing(pdf)
 
@@ -76,7 +76,7 @@ class Langchain:
                     f"Ya se agrego '{pdf_name}' al chat '{chat}'."
                 )
 
-            Langchain.generateFinalChunks(
+            '''Langchain.generateFinalChunks(
                 [doc_for_level3], chat_client_extra, pdf_name)
 
             retriever = chat_client_extra.as_retriever(search_kwargs={"k": 1})
@@ -88,12 +88,12 @@ class Langchain:
 
             # corresponde al resumen generan del PDF que se almacena tambien como un vector despues
             response = Langchain.__simple_query(
-                question, llm, retriever)
+                question, llm, retriever)'''
 
             # corresponde a los vectores de nivel 1
             Langchain.generateFinalChunks(docs, chat_client, pdf_name)
 
-            new_chunk_size = chunk_size // 5
+            '''new_chunk_size = chunk_size // 5
 
             if (new_chunk_size >= 50):
                 docs2 = divideDocuments(new_chunk_size, docs)
@@ -101,7 +101,7 @@ class Langchain:
                 Langchain.generateFinalChunks(docs2, chat_client, pdf_name)
 
             chat_client.add_documents(documents=[Document(page_content=response, metadata={
-                                      'page': 0, 'pdf': pdf_name})], ids=[str(uuid.uuid1())])
+                                      'page': 0, 'pdf': pdf_name})], ids=[str(uuid.uuid1())])'''
 
         except Exception as e:
             raise e
@@ -133,7 +133,7 @@ class Langchain:
 
             vectorstore = Langchain.__get_chroma_client(chat)
 
-            retriever = vectorstore.as_retriever(search_kwargs={"k": 30})
+            retriever = vectorstore.as_retriever(search_kwargs={"k": 50})
 
             memory = ConversationBufferMemory(
                 memory_key="chat_history", return_messages=True)

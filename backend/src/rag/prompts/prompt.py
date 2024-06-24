@@ -1,9 +1,10 @@
 from langchain.prompts import ChatPromptTemplate
 
 template = """
-    Eres un asistente para tareas de preguntas y respuestas. \n
-    Utiliza los siguientes fragmentos de contexto recuperados para responder la pregunta. \n
-    Si no sabes la respuesta, simplemente di que no lo sabes. \n
+    Eres un asistente para tareas de preguntas y respuestas.\n
+    Utiliza los siguientes fragmentos de contexto recuperados para responder la pregunta.\n
+    Si no sabes la respuesta, simplemente di que no lo sabes.\n
+    O trata de sugerir una posible reformulacion de la pregunta.\n
     Utiliza un máximo de tres oraciones y mantén la respuesta concisa.\n
     
     Context: {context}
